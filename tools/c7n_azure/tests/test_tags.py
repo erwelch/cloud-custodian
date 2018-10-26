@@ -72,26 +72,36 @@ class TagsTest(BaseTest):
     def dict_diff(self, a, b):
         return set(a.items()) ^ set(b.items())
 
-    @arm_template('vm.json')
-    def test_add_or_update_single_tag(self):
-        """Verifies we can add a new tag to a VM and not modify
-        an existing tag on that resource
-        """
+    def test_tag_schema_validate(self):
+        with self.sign_out_patch():
+            p = self.load_policy({
+                'name': 'test-tag',
+                'resource': 'azure.resourcegroup',
+                'actions': [
+                    {'type': 'tag',
+                     'tag': 'test',
+                     'value': 'schema'},
+                    {'type': 'tag',
+                     'tag': 'test',
+                     'value': 'schema'},
 
+                ]
+            }, validate=True)
+            self.assertTrue(p)
+
+    def test_add_or_update_single_tag(self):
         p = self.load_policy({
             'name': 'test-azure-tag',
             'resource': 'azure.vm',
-            'filters': [
-                {'type': 'value',
-                 'key': 'name',
-                 'op': 'eq',
-                 'value_type': 'normalize',
-                 'value': 'cctestvm'}
-            ],
             'actions': [
                 {'type': 'tag',
                  'tag': 'tag1',
-                 'value': 'value1'}
+                 'value': 'value1'},
+                {'type': 'untag',
+                 'tags': ['test']},
+                {'type': 'auto-tag-user',
+                 'tag': 'resource owner'},
+                {'type': 'tag-trim'},
             ],
         })
         p.run()

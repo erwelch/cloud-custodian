@@ -20,6 +20,24 @@ class NotifyTest(BaseTest):
     def setUp(self):
         super(NotifyTest, self).setUp()
 
+    def test_notify_schema_validate(self):
+        with self.sign_out_patch():
+            p = self.load_policy({
+                'name': 'test-notify-for-keyvault',
+                'resource': 'azure.keyvault',
+                'actions': [
+                    {'type': 'notify',
+                     'template': 'default',
+                     'priority_header': '2',
+                     'subject': 'testing notify action',
+                     'to': ['user@domain.com'],
+                     'transport':
+                         {'type': 'asq',
+                          'queue': ''}
+                     }
+                ]}, validate=True)
+            self.assertTrue(p)
+
     @arm_template('keyvault.json')
     def test_notify_though_storage_queue(self):
         account = self.setup_account()

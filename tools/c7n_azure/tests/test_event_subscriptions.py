@@ -31,6 +31,17 @@ class AzureEventSubscriptionsTest(BaseTest):
             resource_id=account.id, queue_name=queue_name)
         AzureEventSubscription.create(event_sub_destination, self.event_sub_name)
 
+    def test_event_subscription_schema_validate(self):
+        with self.sign_out_patch():
+            p = self.load_policy({
+                'name': 'test-azure-event-subscription',
+                'resource': 'azure.eventsubscription',
+                'actions': [
+                    {'type': 'delete'}
+                ]
+            }, validate=True)
+            self.assertTrue(p)
+
     @arm_template('storage.json')
     def test_azure_event_subscription_policy_run(self):
         p = self.load_policy({
