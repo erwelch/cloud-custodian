@@ -15,6 +15,7 @@
 Actions to perform on Azure resources
 """
 import datetime
+from abc import abstractmethod
 from datetime import timedelta
 
 from c7n_azure.storage_utils import StorageUtilities
@@ -34,21 +35,24 @@ from c7n.utils import type_schema
 
 class AzureBaseAction(BaseAction):
     session = None
+    max_workers = 3
+    chunk_size = 20
 
     def process(self, resources):
         self.session = self.manager.get_session()
         self.process_in_parallel(resources)
 
-    def process_in_parallel(self, resources, max_workers=3, chunk_size=20):
+    def process_in_parallel(self, resources):
         return ThreadHelper.execute_in_parallel(
             resources=resources,
             execution_method=self.process_resource_set,
             executor_factory=self.executor_factory,
             log=self.log,
-            max_workers=max_workers,
-            chunk_size=chunk_size
+            max_workers=self.max_workers,
+            chunk_size=self.chunk_size
         )
 
+    @abstractmethod
     def process_resource_set(self, resources):
         raise NotImplementedError(
             "Base action class does not implement behavior")
@@ -164,6 +168,8 @@ class AutoTagUser(AzureBaseAction):
 
     def __init__(self, data=None, manager=None, log_dir=None):
         super(AutoTagUser, self).__init__(data, manager, log_dir)
+        self.tag_key = data['tag']
+        self.should_update = data.get('update', False)
 
     def validate(self):
         if self.manager.action_registry.get('tag') is None:
@@ -175,14 +181,8 @@ class AutoTagUser(AzureBaseAction):
 
         return self
 
-    def process(self, resources):
-        self.session = self.manager.get_session()
-        self.client = self.manager.get_client('azure.mgmt.monitor.MonitorManagementClient')
-        self.tag_key = self.data['tag']
-        self.should_update = self.data.get('update', False)
-        self.process_in_parallel(resources)
-
     def process_resource_set(self, resources):
+        client = self.manager.get_client('azure.mgmt.monitor.MonitorManagementClient')
         for resource in resources:
             # if the auto-tag-user policy set update to False (or it's unset) then we
             # will skip writing their UserName tag and not overwrite pre-existing values
@@ -213,7 +213,7 @@ class AutoTagUser(AzureBaseAction):
                 ])
 
             # fetch activity logs
-            logs = self.client.activity_logs.list(
+            logs = client.activity_logs.list(
                 filter=query_filter,
                 select=self.query_select
             )
@@ -290,18 +290,13 @@ class TagTrim(AzureBaseAction):
 
     def __init__(self, data=None, manager=None, log_dir=None):
         super(TagTrim, self).__init__(data, manager, log_dir)
+        self.preserve = set(self.data.get('preserve', {}))
+        self.space = self.data.get('space', 1)
 
     def validate(self):
         if self.data.get('space') < 0 or self.data.get('space') > 15:
             raise FilterValidationError("Space must be between 0 and 15")
-
         return self
-
-    def process(self, resources):
-        self.session = self.manager.get_session()
-        self.preserve = set(self.data.get('preserve', {}))
-        self.space = self.data.get('space', 1)
-        self.process_in_parallel(resources)
 
     def process_resource_set(self, resources):
         for resource in resources:
@@ -431,6 +426,20 @@ class TagDelayedAction(AzureBaseAction):
 
     def __init__(self, data=None, manager=None, log_dir=None):
         super(TagDelayedAction, self).__init__(data, manager, log_dir)
+        self.tz = zoneinfo.gettz(
+            Time.TZ_ALIASES.get(self.data.get('tz', 'utc')))
+
+        msg_tmpl = self.data.get('msg', self.default_template)
+
+        op = self.data.get('op', 'stop')
+        days = self.data.get('days', 0)
+        hours = self.data.get('hours', 0)
+        action_date = self.generate_timestamp(days, hours)
+
+        self.tag = self.data.get('tag', DEFAULT_TAG)
+
+        self.msg = msg_tmpl.format(
+            op=op, action_date=action_date)
 
     def validate(self):
         op = self.data.get('op')
@@ -460,28 +469,6 @@ class TagDelayedAction(AzureBaseAction):
             action_date_string = action_date.strftime('%Y/%m/%d')
 
         return action_date_string
-
-    def process(self, resources):
-        self.session = self.manager.get_session()
-        self.tz = zoneinfo.gettz(
-            Time.TZ_ALIASES.get(self.data.get('tz', 'utc')))
-
-        msg_tmpl = self.data.get('msg', self.default_template)
-
-        op = self.data.get('op', 'stop')
-        days = self.data.get('days', 0)
-        hours = self.data.get('hours', 0)
-        action_date = self.generate_timestamp(days, hours)
-
-        self.tag = self.data.get('tag', DEFAULT_TAG)
-
-        self.msg = msg_tmpl.format(
-            op=op, action_date=action_date)
-
-        self.log.info("Tagging %d resources for %s on %s" % (
-            len(resources), op, action_date))
-
-        self.process_in_parallel(resources)
 
     def process_resource_set(self, resources):
         for resource in resources:
