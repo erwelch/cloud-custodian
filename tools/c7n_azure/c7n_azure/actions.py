@@ -420,8 +420,7 @@ class TagDelayedAction(BaseAction):
 
     def validate(self):
         op = self.data.get('op')
-        keys = self.manager.action_registry.keys()
-        if self.manager and op not in keys:
+        if self.manager and op not in self.manager.action_registry.keys():
             raise PolicyValidationError(
                 "mark-for-op specifies invalid op:%s in %s" % (
                     op, self.manager.data))

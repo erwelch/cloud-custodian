@@ -74,7 +74,7 @@ class AzurePolicyModeTest(BaseTest):
             'name': 'test-azure-serverless-mode',
             'resource': 'azure.vm',
             'mode':
-                {'type': FUNCTION_TIME_TRIGGER_MODE,
+                {'type': FUNCTION_EVENT_TRIGGER_MODE,
                  'events': ['VmWrite'],
                  'provision-options': {
                      'servicePlan': {
