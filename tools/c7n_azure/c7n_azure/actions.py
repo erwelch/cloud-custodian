@@ -15,7 +15,8 @@
 Actions to perform on Azure resources
 """
 import datetime
-from abc import abstractmethod
+import abc
+import six
 from datetime import timedelta
 
 from c7n_azure.storage_utils import StorageUtilities
@@ -33,6 +34,7 @@ from c7n.resolver import ValuesFrom
 from c7n.utils import type_schema
 
 
+@six.add_metaclass(abc.ABCMeta)
 class AzureBaseAction(BaseAction):
     session = None
     max_workers = 3
@@ -52,7 +54,7 @@ class AzureBaseAction(BaseAction):
             chunk_size=self.chunk_size
         )
 
-    @abstractmethod
+    @abc.abstractmethod
     def process_resource_set(self, resources):
         raise NotImplementedError(
             "Base action class does not implement behavior")
