@@ -16,11 +16,9 @@ from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
 from c7n_azure.tags import TagHelper
 
-from c7n.actions import BaseAction
 from c7n.filters.core import ValueFilter, type_schema
-from c7n.filters.related import RelatedResourceFilter
-
 from c7n.filters.offhours import OffHour, OnHour
+from c7n.filters.related import RelatedResourceFilter
 
 
 @resources.register('vm')

@@ -15,7 +15,6 @@
 Actions to perform on Azure resources
 """
 import datetime
-from concurrent.futures import as_completed
 from datetime import timedelta
 
 from c7n_azure.storage_utils import StorageUtilities
@@ -30,7 +29,6 @@ from c7n.filters import FilterValidationError
 from c7n.filters.core import PolicyValidationError
 from c7n.filters.offhours import Time
 from c7n.resolver import ValuesFrom
-from c7n.utils import chunks
 from c7n.utils import type_schema
 
 
@@ -246,7 +244,6 @@ class AutoTagUser(AzureBaseAction):
 
 class TagTrim(AzureBaseAction):
     """Automatically remove tags from an azure resource.
-6y 7yhuuhmjnn nhghm
     Azure Resources and Resource Groups have a limit of 15 tags.
     In order to make additional tag space on a set of resources,
     this action can be used to remove enough tags to make the
@@ -321,7 +318,8 @@ class TagTrim(AzureBaseAction):
 
             if self.space:
                 # Free up slots to fit
-                remove = len(candidates) - (self.max_tag_count - (self.space + len(tags_to_preserve)))
+                remove = (len(candidates) -
+                          (self.max_tag_count - (self.space + len(tags_to_preserve))))
                 candidates = list(sorted(candidates))[:remove]
 
             if not candidates:
