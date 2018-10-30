@@ -81,27 +81,40 @@ class TagsTest(BaseTest):
                     {'type': 'tag',
                      'tag': 'test',
                      'value': 'schema'},
-                    {'type': 'tag',
-                     'tag': 'test',
-                     'value': 'schema'},
+                    {'type': 'tag-trim',
+                     'space': 5},
+                    {'type': 'mark-for-op',
+                     'op': 'delete',
+                     'days': 10},
+                    {'type': 'auto-tag-user',
+                     'tag': 'user'},
+                    {'type': 'untag',
+                     'tags': ['test']}
 
                 ]
             }, validate=True)
             self.assertTrue(p)
 
+    @arm_template('vm.json')
     def test_add_or_update_single_tag(self):
+        """Verifies we can add a new tag to a VM and not modify
+        an existing tag on that resource
+        """
+
         p = self.load_policy({
             'name': 'test-azure-tag',
             'resource': 'azure.vm',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctestvm'}
+            ],
             'actions': [
                 {'type': 'tag',
                  'tag': 'tag1',
-                 'value': 'value1'},
-                {'type': 'untag',
-                 'tags': ['test']},
-                {'type': 'auto-tag-user',
-                 'tag': 'resource owner'},
-                {'type': 'tag-trim'},
+                 'value': 'value1'}
             ],
         })
         p.run()
