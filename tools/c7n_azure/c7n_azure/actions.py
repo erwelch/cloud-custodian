@@ -439,7 +439,6 @@ class TagDelayedAction(AzureBaseAction):
         action_date = self.generate_timestamp(days, hours)
 
         self.tag = self.data.get('tag', DEFAULT_TAG)
-
         self.msg = msg_tmpl.format(
             op=op, action_date=action_date)
 
