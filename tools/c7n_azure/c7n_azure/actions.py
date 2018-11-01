@@ -14,11 +14,11 @@
 """
 Actions to perform on Azure resources
 """
-import datetime
 import abc
-import six
+import datetime
 from datetime import timedelta
 
+import six
 from c7n_azure.storage_utils import StorageUtilities
 from c7n_azure.tags import TagHelper
 from c7n_azure.utils import utcnow, ThreadHelper
@@ -42,7 +42,18 @@ class AzureBaseAction(BaseAction):
 
     def process(self, resources):
         self.session = self.manager.get_session()
-        self.process_in_parallel(resources)
+        results, exceptions = self.process_in_parallel(resources)
+
+        if len(exceptions) > 0:
+            self.handle_exceptions(exceptions)
+
+        self.process_resource_set(resources)
+
+        return results
+
+    def handle_exceptions(self, exceptions):
+        # Raising one exception to maintain stack trace since sys.exec
+        raise exceptions[0]
 
     def process_in_parallel(self, resources):
         return ThreadHelper.execute_in_parallel(

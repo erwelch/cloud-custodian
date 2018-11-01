@@ -16,12 +16,15 @@ import datetime
 import hashlib
 import logging
 import re
+import sys
+import traceback
+from builtins import bytes
+from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 
 import six
 from azure.graphrbac.models import GetObjectsParameters, DirectoryObject
 from azure.mgmt.web.models import NameValuePair
-from builtins import bytes
 from msrestazure.azure_exceptions import CloudError
 from msrestazure.tools import parse_resource_id
 
@@ -102,21 +105,23 @@ class ThreadHelper:
                             log, max_workers=3, chunk_size=20):
         futures = []
         results = []
+        exceptions = []
         with executor_factory(max_workers=max_workers) as w:
             for resource_set in chunks(resources, chunk_size):
                 futures.append(w.submit(execution_method, resource_set))
 
             for f in as_completed(futures):
                 if f.exception():
-                    log.warning(
+                    raise f.exception()
+                    log.error(
                         "Execution failed with error: %s" % f.exception())
-                    continue
+                    exceptions.append(f.exception())
                 else:
                     result = f.result()
                     if result:
                         results.extend(result)
 
-            return results
+            return results, list(set(exceptions))
 
 
 class Math(object):
