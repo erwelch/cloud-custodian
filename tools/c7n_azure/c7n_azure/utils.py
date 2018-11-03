@@ -16,10 +16,7 @@ import datetime
 import hashlib
 import logging
 import re
-import sys
-import traceback
 from builtins import bytes
-from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 
 import six
@@ -122,6 +119,7 @@ class ThreadHelper:
                     log.error(
                         "Execution failed with error: %s" % f.exception())
                     exceptions.append(f.exception())
+                    continue
                 else:
                     result = f.result()
                     if result:

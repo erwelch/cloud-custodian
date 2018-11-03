@@ -19,13 +19,12 @@ import datetime
 import logging
 from datetime import timedelta
 
-import six
 import jmespath
+import six
 from c7n_azure import constants
 from c7n_azure.storage_utils import StorageUtilities
 from c7n_azure.tags import TagHelper
 from c7n_azure.utils import utcnow, ThreadHelper
-from c7n_azure import constants
 from dateutil import zoneinfo
 from msrestazure.azure_exceptions import CloudError
 
@@ -50,8 +49,6 @@ class AzureBaseAction(BaseAction):
 
         if len(exceptions) > 0:
             self.handle_exceptions(exceptions)
-
-        self.process_resource_set(resources)
 
         return results
 

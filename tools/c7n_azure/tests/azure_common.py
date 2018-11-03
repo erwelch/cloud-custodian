@@ -104,6 +104,7 @@ class BaseTest(TestUtils, AzureVCRBaseTest):
     """
 
     def setUp(self):
+        super(BaseTest, self).setUp()
         ThreadHelper.disable_multi_threading = True
 
     @staticmethod
