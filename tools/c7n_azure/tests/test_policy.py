@@ -15,13 +15,59 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from azure_common import BaseTest
 from c7n_azure.azure_events import AzureEvents
-from c7n_azure.constants import FUNCTION_EVENT_TRIGGER_MODE
+from c7n_azure.constants import FUNCTION_EVENT_TRIGGER_MODE, FUNCTION_TIME_TRIGGER_MODE
 from c7n_azure.policy import AzureEventGridMode, AzureFunctionMode
 
 
 class AzurePolicyModeTest(BaseTest):
     def setUp(self):
         super(AzurePolicyModeTest, self).setUp()
+
+    def test_azure_function_event_mode_schema_validation(self):
+        with self.sign_out_patch():
+            p = self.load_policy({
+                'name': 'test-azure-serverless-mode',
+                'resource': 'azure.vm',
+                'mode':
+                    {'type': FUNCTION_EVENT_TRIGGER_MODE,
+                     'events': ['VmWrite'],
+                     'provision-options': {
+                         'servicePlan': {
+                             'name': 'test-cloud-custodian',
+                             'location': 'eastus',
+                             'resourceGroupName': 'test'},
+                         'storageAccount': {
+                             'name': 'testschemaname'
+                         },
+                         'appInsights': {
+                             'name': 'testschemaname'
+                         }
+                     }}
+            })
+            self.assertTrue(p)
+
+    def test_azure_function_periodic_mode_schema_validation(self):
+        with self.sign_out_patch():
+            p = self.load_policy({
+                'name': 'test-azure-serverless-mode',
+                'resource': 'azure.vm',
+                'mode':
+                    {'type': FUNCTION_TIME_TRIGGER_MODE,
+                     'schedule': '0 * /5 * * * *',
+                     'provision-options': {
+                         'servicePlan': {
+                             'name': 'test-cloud-custodian',
+                             'location': 'eastus',
+                             'resourceGroupName': 'test'},
+                         'storageAccount': {
+                             'name': 'testschemaname'
+                         },
+                         'appInsights': {
+                             'name': 'testschemaname'
+                         }
+                     }}
+            })
+            self.assertTrue(p)
 
     def test_init_azure_function_mode_with_service_plan(self):
         p = self.load_policy({

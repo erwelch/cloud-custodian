@@ -16,9 +16,12 @@ Actions to perform on Azure resources
 """
 import abc
 import datetime
+import logging
 from datetime import timedelta
 
 import six
+import jmespath
+from c7n_azure import constants
 from c7n_azure.storage_utils import StorageUtilities
 from c7n_azure.tags import TagHelper
 from c7n_azure.utils import utcnow, ThreadHelper
@@ -27,7 +30,7 @@ from dateutil import zoneinfo
 from msrestazure.azure_exceptions import CloudError
 
 from c7n import utils
-from c7n.actions import BaseAction, BaseNotify
+from c7n.actions import BaseAction, BaseNotify, EventAction
 from c7n.filters import FilterValidationError
 from c7n.filters.core import PolicyValidationError
 from c7n.filters.offhours import Time
@@ -150,7 +153,7 @@ class RemoveTag(AzureBaseAction):
             TagHelper.remove_tags(self, resource, tags_to_delete)
 
 
-class AutoTagUser(AzureBaseAction):
+class AutoTagUser(EventAction):
     """Attempts to tag a resource with the first user who created/modified it.
 
     .. code-block:: yaml
@@ -174,6 +177,11 @@ class AutoTagUser(AzureBaseAction):
     query_select = "eventTimestamp, operationName, caller"
     max_query_days = 90
 
+    # compiled JMES paths
+    sp_jmes_path = jmespath.compile(constants.EVENT_GRID_SP_NAME_JMES_PATH)
+    user_jmes_path = jmespath.compile(constants.EVENT_GRID_USER_NAME_JMES_PATH)
+    principal_type_jmes_path = jmespath.compile(constants.EVENT_GRID_PRINCIPAL_TYPE_JMES_PATH)
+
     schema = utils.type_schema(
         'auto-tag-user',
         required=['tag'],
@@ -183,12 +191,17 @@ class AutoTagUser(AzureBaseAction):
 
     def __init__(self, data=None, manager=None, log_dir=None):
         super(AutoTagUser, self).__init__(data, manager, log_dir)
-        self.tag_key = data['tag']
-        self.should_update = data.get('update', False)
+        self.log = logging.getLogger('custodian.azure.actions.auto-tag-user')
 
     def validate(self):
+
         if self.manager.action_registry.get('tag') is None:
             raise FilterValidationError("Resource does not support tagging")
+
+        if self.manager.data.get('mode', {}).get('type') == 'azure-event-grid' \
+                and self.data.get('days') is not None:
+            raise PolicyValidationError(
+                "Auto tag user in event mode does not use days.")
 
         if (self.data.get('days') is not None and
                 (self.data.get('days') < 1 or self.data.get('days') > 90)):
@@ -196,16 +209,35 @@ class AutoTagUser(AzureBaseAction):
 
         return self
 
-    def process_resource_set(self, resources):
-        client = self.manager.get_client('azure.mgmt.monitor.MonitorManagementClient')
-        for resource in resources:
-            # if the auto-tag-user policy set update to False (or it's unset) then we
-            # will skip writing their UserName tag and not overwrite pre-existing values
-            if not self.should_update and resource.get('tags', {}).get(self.tag_key, None):
+    def process(self, resources, event=None):
+        self.session = self.manager.get_session()
+        self.client = self.manager.get_client('azure.mgmt.monitor.MonitorManagementClient')
+        self.tag_key = self.data['tag']
+        self.should_update = self.data.get('update', False)
+
+        with self.executor_factory(max_workers=3) as w:
+            if event:
+                list(w.map(self.process_resource, resources, event))
+            else:
+                list(w.map(self.process_resource, resources))
+
+    def process_resource(self, resource, event_item=None):
+        # if the auto-tag-user policy set update to False (or it's unset) then we
+        # will skip writing their UserName tag and not overwrite pre-existing values
+        if not self.should_update and resource.get('tags', {}).get(self.tag_key, None):
+            return
+
+        user = self.default_user
+        if event_item:
+            principal_type = self.principal_type_jmes_path.search(event_item)
+            if principal_type == 'User':
+                user = self.user_jmes_path.search(event_item) or user
+            elif principal_type == 'ServicePrincipal':
+                user = self.sp_jmes_path.search(event_item) or user
+            else:
+                self.log.error('Principal type of event cannot be determined.')
                 return
-
-            user = self.default_user
-
+        else:
             # Calculate start time
             delta_days = self.data.get('days', self.max_query_days)
             start_time = utcnow() - datetime.timedelta(days=delta_days)
@@ -228,7 +260,7 @@ class AutoTagUser(AzureBaseAction):
                 ])
 
             # fetch activity logs
-            logs = client.activity_logs.list(
+            logs = self.client.activity_logs.list(
                 filter=query_filter,
                 select=self.query_select
             )
@@ -239,13 +271,13 @@ class AutoTagUser(AzureBaseAction):
             if first_op is not None:
                 user = first_op.caller
 
-            # issue tag action to label user
-            try:
-                TagHelper.add_tags(self, resource, {self.tag_key: user})
-            except CloudError as e:
-                # resources can be locked
-                if e.inner_exception.error == 'ScopeLocked':
-                    pass
+        # issue tag action to label user
+        try:
+            TagHelper.add_tags(self, resource, {self.tag_key: user})
+        except CloudError as e:
+            # resources can be locked
+            if e.inner_exception.error == 'ScopeLocked':
+                pass
 
     @staticmethod
     def get_first_operation(logs, operation_name):
@@ -309,7 +341,7 @@ class TagTrim(AzureBaseAction):
         self.space = self.data.get('space', 1)
 
     def validate(self):
-        if self.data.get('space') < 0 or self.data.get('space') > 15:
+        if self.space < 0 or self.space > 15:
             raise FilterValidationError("Space must be between 0 and 15")
         return self
 
@@ -376,10 +408,11 @@ class Notify(BaseNotify):
 
     def process(self, resources, event=None):
         session = utils.local_session(self.manager.session_factory)
+        subscription_id = session.get_subscription_id()
         message = {
             'event': event,
-            'account_id': session.subscription_id,
-            'account': session.subscription_id,
+            'account_id': subscription_id,
+            'account': subscription_id,
             'region': 'all',
             'policy': self.manager.data}
 
