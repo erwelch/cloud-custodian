@@ -17,6 +17,7 @@ import re
 
 from c7n_azure import constants
 from c7n_azure.session import Session
+from c7n_azure.utils import ThreadHelper
 from mock import patch
 from vcr_unittest import VCRTestCase
 
@@ -96,6 +97,9 @@ class AzureVCRBaseTest(VCRTestCase):
 class BaseTest(TestUtils, AzureVCRBaseTest):
     """ Azure base testing class.
     """
+
+    def setUp(self):
+        ThreadHelper.disable_multi_threading = True
 
     @staticmethod
     def setup_account():

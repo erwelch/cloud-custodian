@@ -22,6 +22,7 @@ import six
 from c7n_azure.storage_utils import StorageUtilities
 from c7n_azure.tags import TagHelper
 from c7n_azure.utils import utcnow, ThreadHelper
+from c7n_azure import constants
 from dateutil import zoneinfo
 from msrestazure.azure_exceptions import CloudError
 
@@ -37,8 +38,8 @@ from c7n.utils import type_schema
 @six.add_metaclass(abc.ABCMeta)
 class AzureBaseAction(BaseAction):
     session = None
-    max_workers = 3
-    chunk_size = 20
+    max_workers = constants.DEFAULT_MAX_THREAD_WORKERS
+    chunk_size = constants.DEFAULT_CHUNK_SIZE
 
     def process(self, resources):
         self.session = self.manager.get_session()
@@ -52,7 +53,8 @@ class AzureBaseAction(BaseAction):
         return results
 
     def handle_exceptions(self, exceptions):
-        # Raising one exception to maintain stack trace since sys.exec
+        """raising one exception re-raises the last exception and maintains
+        the stack trace"""
         raise exceptions[0]
 
     def process_in_parallel(self, resources):
