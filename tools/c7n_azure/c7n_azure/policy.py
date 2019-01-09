@@ -267,6 +267,9 @@ class AzureEventGridMode(AzureFunctionMode):
                     self.policy.name, self.policy.resource_type))
             return
 
+        resources = self.policy.resource_manager.filter_resources(
+            resources, event)
+
         with self.policy.ctx:
             self.policy.ctx.metrics.put_metric(
                 'ResourceCount', len(resources), 'Count', Scope="Policy",
