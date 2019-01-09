@@ -253,8 +253,10 @@ class AzureEventGridMode(AzureFunctionMode):
 
     def run(self, event=None, lambda_context=None):
         """Run the actual policy."""
-        resource_ids = [event['subject']]
-        resources = self.policy.resource_manager.get_resources(resource_ids)
+        resources = self.policy.resource_manager.get_resources([event['subject']])
+
+        resources = self.policy.resource_manager.filter_resources(
+            resources, event)
 
         if not resources:
             self.policy.log.info(
