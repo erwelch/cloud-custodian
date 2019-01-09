@@ -239,7 +239,7 @@ class AutoTagUser(EventAction):
 
             return results, list(set(exceptions))
 
-    def process_resource_set(self, resources, event_item=None):
+    def process_resource_set(self, resources, event=None):
         for resource in resources:
             # if the auto-tag-user policy set update to False (or it's unset) then we
             # will skip writing their UserName tag and not overwrite pre-existing values
@@ -247,8 +247,8 @@ class AutoTagUser(EventAction):
                 return
 
             user = self.default_user
-            if event_item:
-                user = self._get_user_from_event(event_item) or user
+            if event:
+                user = self._get_user_from_event(event) or user
             else:
                 user = self._get_user_from_resource_logs(resource) or user
 
@@ -260,19 +260,19 @@ class AutoTagUser(EventAction):
                 if e.inner_exception.error == 'ScopeLocked':
                     pass
 
-    def _get_user_from_event(self, event_item):
-        principal_role = self.principal_role_jmes_path.search(event_item)
-        principal_type = self.principal_type_jmes_path.search(event_item)
+    def _get_user_from_event(self, event):
+        principal_role = self.principal_role_jmes_path.search(event)
+        principal_type = self.principal_type_jmes_path.search(event)
 
         # The Subscription Admins role does not have a principal type
         if StringUtils.equal(principal_role, 'Subscription Admin'):
-            return self.service_admin_jmes_path.search(event_item)
+            return self.service_admin_jmes_path.search(event)
         # ServicePrincipal type
         elif StringUtils.equal(principal_type, 'ServicePrincipal'):
-            return self.sp_jmes_path.search(event_item)
+            return self.sp_jmes_path.search(event)
         # Other types (e.g. User, Office 365 Groups, and Security Groups)
-        elif self.upn_jmes_path.search(event_item):
-            return self.upn_jmes_path.search(event_item)
+        elif self.upn_jmes_path.search(event):
+            return self.upn_jmes_path.search(event)
         else:
             self.log.error('Principal could not be determined.')
 
@@ -308,7 +308,6 @@ class AutoTagUser(EventAction):
         operation_name = "%s/write" % resource_type
         first_op = self.get_first_operation(logs, operation_name)
         return first_op.caller if first_op else None
-
 
     @staticmethod
     def get_first_operation(logs, operation_name):
