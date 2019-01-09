@@ -219,7 +219,7 @@ class AutoTagUser(EventAction):
         results = []
         exceptions = []
 
-        max_num_workers = 1 if ThreadHelper.disable_multi_threading\
+        max_num_workers = 1 if ThreadHelper.disable_multi_threading \
             else constants.DEFAULT_MAX_THREAD_WORKERS
 
         with self.executor_factory(max_workers=max_num_workers) as w:
