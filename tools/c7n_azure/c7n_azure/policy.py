@@ -253,13 +253,11 @@ class AzureEventGridMode(AzureFunctionMode):
 
     def run(self, event=None, lambda_context=None):
         """Run the actual policy."""
-        subscribed_events = AzureEvents.get_event_operations(
-            self.policy.data['mode'].get('events'))
 
-        resource_ids = list(set(
-            [e['subject'] for e in event if self._is_subscribed_to_event(e, subscribed_events)]))
+        resources = self.policy.resource_manager.get_resources([event['subject']])
 
-        resources = self.policy.resource_manager.get_resources(resource_ids)
+        resources = self.policy.resource_manager.filter_resources(
+            resources, event)
 
         if not resources:
             self.policy.log.info(
@@ -294,18 +292,6 @@ class AzureEventGridMode(AzureFunctionMode):
     def get_logs(self, start, end):
         """Retrieve logs for the policy"""
         raise NotImplementedError("error - not implemented")
-
-    def _is_subscribed_to_event(self, event, subscribed_events):
-        subscribed_events = [e.lower() for e in subscribed_events]
-        if not event['data']['operationName'].lower() in subscribed_events:
-            self.policy.log.info(
-                "Event operation %s does not match subscribed events %s" % (
-                    event['data']['operationName'], subscribed_events
-                )
-            )
-            return False
-
-        return True
 
     def _create_storage_queue(self, queue_name, session):
         self.log.info("Creating storage queue")
