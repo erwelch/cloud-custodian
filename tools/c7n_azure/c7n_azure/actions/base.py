@@ -57,12 +57,12 @@ class AzureBaseAction(BaseAction):
             chunk_size=self.chunk_size
         )
 
-    def _process_resources(self, resources, event):
+    def _process_resources(self, resources, event, **kwargs):
         self._prepare_processing()
 
         for r in resources:
             try:
-                self._process_resource(r)
+                self._process_resource(r, event, **kwargs)
             except Exception as e:
                 self.log.error("Failed to process resource.\n"
                                "Type: {0}.\n"
@@ -73,7 +73,7 @@ class AzureBaseAction(BaseAction):
         pass
 
     @abc.abstractmethod
-    def _process_resource(self, resource):
+    def _process_resource(self, resource, event=None, **kwargs):
         raise NotImplementedError(
             "Base action class does not implement this behavior")
 
