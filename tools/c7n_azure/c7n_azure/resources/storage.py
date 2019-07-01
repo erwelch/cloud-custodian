@@ -330,15 +330,7 @@ class UpdateLogSettingsAction(AzureBaseAction):
 
     def process_in_parallel(self, resources, event):
         self.token = StorageUtilities.get_storage_token(self.session)
-        return ThreadHelper.execute_in_parallel(
-            resources=resources,
-            event=event,
-            execution_method=self._process_resources,
-            executor_factory=self.executor_factory,
-            log=self.log,
-            max_workers=self.max_workers,
-            chunk_size=self.chunk_size
-        )
+        return super(UpdateLogSettingsAction, self).process_in_parallel(resources, event)
 
     def _process_resource(self, resource, event=None):
         retention = RetentionPolicy(enabled=self.retention != 0, days=self.retention)
