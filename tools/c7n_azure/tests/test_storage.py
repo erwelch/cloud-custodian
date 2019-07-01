@@ -26,6 +26,7 @@ from c7n.utils import local_session
 class StorageTest(BaseTest):
     def setUp(self):
         super(StorageTest, self).setUp()
+        StorageUtilities.get_storage_primary_key.cache_clear()
 
     def test_storage_schema_validate(self):
         with self.sign_out_patch():
@@ -327,7 +328,7 @@ class StorageTest(BaseTest):
         self.assertTrue(table_settings.logging.delete)
 
     @arm_template('storage.json')
-    def test_no_retention_log_settings(self):
+    def test_disable_retention_log_settings(self):
         p = self.load_policy({
             'name': 'test-azure-storage',
             'resource': 'azure.storage',

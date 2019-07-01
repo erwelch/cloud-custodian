@@ -24,15 +24,15 @@
                         "11526"
                     ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:46 GMT"
+                        "Mon, 01 Jul 2019 22:16:43 GMT"
                     ],
                     "x-ms-original-request-ids": [
-                        "6fa463be-94e2-45fd-aa05-640c13262dc7",
-                        "c289fd6a-cbfe-4811-ac8a-4dc4865d8fe5",
-                        "f905924c-1a25-4a57-99c3-3bca2f35bf06",
-                        "17382551-cd63-4c48-af88-36b582ead028",
-                        "8e967115-0197-4cd1-88ba-1877e2eb7456",
-                        "d94dcc83-b5ee-409f-9898-cb977b656d77"
+                        "565bb76c-04a1-4271-9ab9-0577323d063b",
+                        "3bd9f462-a09e-4399-bb00-6e0b19e642c8",
+                        "0e32e698-42c8-4130-b646-99a0ada9c667",
+                        "017dc74a-b639-4e6f-81c1-63fd72216b69",
+                        "233c8689-06b0-4ca5-9224-33478edb1805",
+                        "43a46183-b280-4dd0-a4b5-deda77ce3410"
                     ]
                 },
                 "body": {
@@ -516,7 +516,7 @@
                         "2018-11-09"
                     ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:47 GMT"
+                        "Mon, 01 Jul 2019 22:16:43 GMT"
                     ],
                     "content-length": [
                         "0"
@@ -544,7 +544,7 @@
                         "2018-03-28"
                     ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:47 GMT"
+                        "Mon, 01 Jul 2019 22:16:43 GMT"
                     ],
                     "content-length": [
                         "0"
@@ -572,7 +572,7 @@
                         "no-cache"
                     ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:48 GMT"
+                        "Mon, 01 Jul 2019 22:16:43 GMT"
                     ],
                     "x-ms-ratelimit-remaining-subscription-writes": [
                         "1199"
@@ -619,7 +619,7 @@
                         "2018-03-28"
                     ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:48 GMT"
+                        "Mon, 01 Jul 2019 22:16:44 GMT"
                     ]
                 },
                 "body": {
@@ -644,14 +644,14 @@
                         "2018-11-09"
                     ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:49 GMT"
+                        "Mon, 01 Jul 2019 22:16:45 GMT"
                     ],
                     "content-type": [
                         "application/xml"
                     ]
                 },
                 "body": {
-                    "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>true</Read><Write>true</Write><Delete>true</Delete><RetentionPolicy><Enabled>true</Enabled><Days>5</Days></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /><DeleteRetentionPolicy><Enabled>false</Enabled></DeleteRetentionPolicy></StorageServiceProperties>"
+                    "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>true</Read><Write>true</Write><Delete>true</Delete><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /><DeleteRetentionPolicy><Enabled>false</Enabled></DeleteRetentionPolicy></StorageServiceProperties>"
                 }
             }
         },
@@ -675,14 +675,14 @@
                         "no-cache"
                     ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:49 GMT"
+                        "Mon, 01 Jul 2019 22:16:45 GMT"
                     ],
                     "content-type": [
                         "application/xml"
                     ]
                 },
                 "body": {
-                    "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>true</Read><Write>true</Write><Delete>true</Delete><RetentionPolicy><Enabled>true</Enabled><Days>5</Days></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /></StorageServiceProperties>"
+                    "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>true</Read><Write>true</Write><Delete>true</Delete><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /></StorageServiceProperties>"
                 }
             }
         },
@@ -703,14 +703,14 @@
                         "2018-03-28"
                     ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:50 GMT"
+                        "Mon, 01 Jul 2019 22:16:45 GMT"
                     ],
                     "content-type": [
                         "application/xml"
                     ]
                 },
                 "body": {
-                    "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>true</Read><Write>true</Write><Delete>true</Delete><RetentionPolicy><Enabled>true</Enabled><Days>5</Days></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /></StorageServiceProperties>"
+                    "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>true</Read><Write>true</Write><Delete>true</Delete><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /></StorageServiceProperties>"
                 }
             }
         }
