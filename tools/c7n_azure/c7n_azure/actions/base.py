@@ -62,7 +62,7 @@ class AzureBaseAction(BaseAction):
 
         for r in resources:
             try:
-                self._process_resource(r, event)
+                self._process_resource(r)
             except Exception as e:
                 self.log.error("Failed to process resource.\n"
                                "Type: {0}.\n"
@@ -73,7 +73,7 @@ class AzureBaseAction(BaseAction):
         pass
 
     @abc.abstractmethod
-    def _process_resource(self, resource, event=None):
+    def _process_resource(self, resource):
         raise NotImplementedError(
             "Base action class does not implement this behavior")
 
