@@ -98,7 +98,7 @@ FUNCTION_EXTENSION_BUNDLE_CONFIG = {
 }
 
 """
-Azure Storage 
+Azure Storage
 """
 BLOB_TYPE = 'blob'
 QUEUE_TYPE = 'queue'
