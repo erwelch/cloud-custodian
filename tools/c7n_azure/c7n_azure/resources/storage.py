@@ -321,6 +321,7 @@ class UpdateLogSettingsAction(AzureBaseAction):
         self.logs_to_enable = data.get('log')
         self.retention = data.get('retention')
         self.log = logging.getLogger('custodian.azure.storage')
+        self.token = None
 
     def validate(self):
         if self.retention < 0 or self.retention > 365:
@@ -328,7 +329,7 @@ class UpdateLogSettingsAction(AzureBaseAction):
                 'attribute: retention can not be less than 0 or greater than 365')
 
     def process_in_parallel(self, resources, event):
-        token = StorageUtilities.get_storage_token(self.session)
+        self.token = StorageUtilities.get_storage_token(self.session)
         return ThreadHelper.execute_in_parallel(
             resources=resources,
             event=event,
@@ -336,19 +337,17 @@ class UpdateLogSettingsAction(AzureBaseAction):
             executor_factory=self.executor_factory,
             log=self.log,
             max_workers=self.max_workers,
-            chunk_size=self.chunk_size,
-            token=token
+            chunk_size=self.chunk_size
         )
 
-    def _process_resource(self, resource, event=None, **kwargs):
+    def _process_resource(self, resource, event=None):
         retention = RetentionPolicy(enabled=self.retention != 0, days=self.retention)
         log_settings = Logging(self.DELETE in self.logs_to_enable, self.READ in self.logs_to_enable,
                                self.WRITE in self.logs_to_enable, retention_policy=retention)
 
-        token = kwargs.get('token')
         for storage_type in self.storage_types:
             StorageSettingsUtilities.update_logging(storage_type, resource,
-                                                    log_settings, self.session, token)
+                                                    log_settings, self.session, self.token)
 
 
 class StorageSettingsUtilities(object):
