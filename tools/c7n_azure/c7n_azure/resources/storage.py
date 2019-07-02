@@ -244,18 +244,7 @@ class StorageDiagnosticSettingsFilter(ValueFilter):
         return matched
 
     def _get_settings(self, storage_account, session=None, token=None):
-        storage_prefix_property = ''
-        if self.storage_type == BLOB_TYPE:
-            storage_prefix_property = get_annotation_prefix(BLOB_TYPE)
-
-        elif self.storage_type == FILE_TYPE:
-            storage_prefix_property = get_annotation_prefix(FILE_TYPE)
-
-        elif self.storage_type == TABLE_TYPE:
-            storage_prefix_property = get_annotation_prefix(TABLE_TYPE)
-
-        elif self.storage_type == QUEUE_TYPE:
-            storage_prefix_property = get_annotation_prefix(QUEUE_TYPE)
+        storage_prefix_property = get_annotation_prefix(self.storage_type)
 
         if not (storage_prefix_property in storage_account):
             settings = StorageSettingsUtilities.get_settings(
