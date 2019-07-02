@@ -1,304 +1,351 @@
 {
-    "version": 1,
+    "version": 1, 
     "interactions": [
         {
             "request": {
-                "method": "GET",
-                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/providers/Microsoft.Storage/storageAccounts?api-version=2019-04-01",
-                "body": null,
-                "headers": {}
-            },
+                "body": null, 
+                "headers": {}, 
+                "method": "GET", 
+                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/providers/Microsoft.Storage/storageAccounts?api-version=2019-04-01"
+            }, 
             "response": {
                 "status": {
-                    "code": 200,
-                    "message": "OK"
-                },
+                    "message": "OK", 
+                    "code": 200
+                }, 
                 "headers": {
-                    "cache-control": [
-                        "no-cache"
-                    ],
-                    "content-type": [
-                        "application/json; charset=utf-8"
-                    ],
+                    "date": [
+                        "Tue, 02 Jul 2019 01:01:20 GMT"
+                    ], 
                     "content-length": [
                         "11526"
-                    ],
-                    "date": [
-                        "Mon, 01 Jul 2019 22:16:38 GMT"
-                    ],
+                    ], 
                     "x-ms-original-request-ids": [
-                        "72b82aed-fe9f-4a66-82c0-936676936d54",
-                        "826bb157-0006-4332-a743-16dc35fb40e7",
-                        "c35c4fca-b04e-474d-a82e-e080b190bad6",
-                        "4874eb9e-d303-44b2-8f9e-050ab6b20005",
-                        "54d0c3fc-a083-49b1-8ee7-6ad36a89e35b",
-                        "bd0ea053-dcde-4edc-a6e8-8f2321cdad0d"
+                        "5247b619-db06-4339-ba03-3afe225881fd", 
+                        "51bfb4b2-78dd-4691-8c00-205e24e444d4", 
+                        "52b0dc43-2f14-48d8-b959-62d1e4617a5f", 
+                        "4adb6f12-990d-4bfc-a77f-88eedcc4c848", 
+                        "0eaa53c1-eddb-4c20-96ae-fedef313f8c9", 
+                        "2aeaf053-66db-4b38-b451-10f3657a2309"
+                    ], 
+                    "content-type": [
+                        "application/json; charset=utf-8"
+                    ], 
+                    "cache-control": [
+                        "no-cache"
                     ]
-                },
+                }, 
                 "body": {
                     "data": {
                         "value": [
                             {
                                 "sku": {
-                                    "name": "Standard_LRS",
-                                    "tier": "Standard"
-                                },
-                                "kind": "Storage",
-                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_storage/providers/Microsoft.Storage/storageAccounts/cclgstoragey6akyqpagdt3o",
-                                "name": "cclgstoragey6akyqpagdt3o",
-                                "type": "Microsoft.Storage/storageAccounts",
-                                "location": "southcentralus",
+                                    "tier": "Standard", 
+                                    "name": "Standard_LRS"
+                                }, 
+                                "kind": "Storage", 
+                                "name": "cclgstoragey6akyqpagdt3o", 
                                 "tags": {
                                     "CreatorEmail": "erwelch@microsoft.com"
-                                },
+                                }, 
                                 "properties": {
-                                    "networkAcls": {
-                                        "bypass": "AzureServices",
-                                        "virtualNetworkRules": [],
-                                        "ipRules": [],
-                                        "defaultAction": "Allow"
-                                    },
-                                    "supportsHttpsTrafficOnly": false,
+                                    "primaryEndpoints": {
+                                        "queue": "https://cclgstoragey6akyqpagdt3o.queue.core.windows.net/", 
+                                        "table": "https://cclgstoragey6akyqpagdt3o.table.core.windows.net/", 
+                                        "blob": "https://cclgstoragey6akyqpagdt3o.blob.core.windows.net/", 
+                                        "file": "https://cclgstoragey6akyqpagdt3o.file.core.windows.net/"
+                                    }, 
                                     "encryption": {
                                         "services": {
-                                            "file": {
-                                                "enabled": true,
-                                                "lastEnabledTime": "2019-07-01T18:42:58.6933811Z"
-                                            },
                                             "blob": {
-                                                "enabled": true,
+                                                "enabled": true, 
+                                                "lastEnabledTime": "2019-07-01T18:42:58.6933811Z"
+                                            }, 
+                                            "file": {
+                                                "enabled": true, 
                                                 "lastEnabledTime": "2019-07-01T18:42:58.6933811Z"
                                             }
-                                        },
+                                        }, 
                                         "keySource": "Microsoft.Storage"
-                                    },
-                                    "provisioningState": "Succeeded",
-                                    "creationTime": "2019-07-01T18:42:58.5996118Z",
-                                    "primaryEndpoints": {
-                                        "blob": "https://cclgstoragey6akyqpagdt3o.blob.core.windows.net/",
-                                        "queue": "https://cclgstoragey6akyqpagdt3o.queue.core.windows.net/",
-                                        "table": "https://cclgstoragey6akyqpagdt3o.table.core.windows.net/",
-                                        "file": "https://cclgstoragey6akyqpagdt3o.file.core.windows.net/"
-                                    },
-                                    "primaryLocation": "southcentralus",
-                                    "statusOfPrimary": "available"
-                                }
+                                    }, 
+                                    "creationTime": "2019-07-01T18:42:58.5996118Z", 
+                                    "supportsHttpsTrafficOnly": false, 
+                                    "networkAcls": {
+                                        "defaultAction": "Allow", 
+                                        "ipRules": [], 
+                                        "virtualNetworkRules": [], 
+                                        "bypass": "AzureServices"
+                                    }, 
+                                    "primaryLocation": "southcentralus", 
+                                    "statusOfPrimary": "available", 
+                                    "provisioningState": "Succeeded"
+                                }, 
+                                "location": "southcentralus", 
+                                "type": "Microsoft.Storage/storageAccounts", 
+                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_storage/providers/Microsoft.Storage/storageAccounts/cclgstoragey6akyqpagdt3o"
                             }
                         ]
                     }
                 }
             }
-        },
+        }, 
         {
             "request": {
-                "method": "PUT",
-                "uri": "https://cclgstoragey6akyqpagdt3o.blob.core.windows.net/?restype=service&comp=properties",
-                "body": "mock_body",
-                "headers": {}
-            },
+                "body": "mock_body", 
+                "headers": {}, 
+                "method": "PUT", 
+                "uri": "https://cclgstoragey6akyqpagdt3o.blob.core.windows.net/?comp=properties&restype=service"
+            }, 
             "response": {
                 "status": {
-                    "code": 202,
-                    "message": "Accepted"
-                },
+                    "message": "Accepted", 
+                    "code": 202
+                }, 
                 "headers": {
+                    "date": [
+                        "Tue, 02 Jul 2019 01:01:21 GMT"
+                    ], 
                     "x-ms-version": [
                         "2018-11-09"
-                    ],
-                    "date": [
-                        "Mon, 01 Jul 2019 22:16:39 GMT"
-                    ],
+                    ], 
                     "content-length": [
                         "0"
                     ]
-                },
+                }, 
                 "body": {
                     "string": ""
                 }
             }
-        },
+        }, 
         {
             "request": {
-                "method": "PUT",
-                "uri": "https://cclgstoragey6akyqpagdt3o.queue.core.windows.net/?restype=service&comp=properties",
-                "body": "mock_body",
-                "headers": {}
-            },
+                "body": "mock_body", 
+                "headers": {}, 
+                "method": "PUT", 
+                "uri": "https://cclgstoragey6akyqpagdt3o.queue.core.windows.net/?comp=properties&restype=service"
+            }, 
             "response": {
                 "status": {
-                    "code": 202,
-                    "message": "Accepted"
-                },
+                    "message": "Accepted", 
+                    "code": 202
+                }, 
                 "headers": {
+                    "date": [
+                        "Tue, 02 Jul 2019 01:01:22 GMT"
+                    ], 
                     "x-ms-version": [
                         "2018-03-28"
-                    ],
-                    "date": [
-                        "Mon, 01 Jul 2019 22:16:40 GMT"
-                    ],
+                    ], 
                     "content-length": [
                         "0"
                     ]
-                },
+                }, 
                 "body": {
                     "string": ""
                 }
             }
-        },
+        }, 
         {
             "request": {
-                "method": "POST",
-                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_storage/providers/Microsoft.Storage/storageAccounts/cclgstoragey6akyqpagdt3o/listKeys?api-version=2019-04-01",
-                "body": null,
-                "headers": {}
-            },
+                "body": null, 
+                "headers": {}, 
+                "method": "POST", 
+                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_storage/providers/Microsoft.Storage/storageAccounts/cclgstoragey6akyqpagdt3o/listKeys?api-version=2019-04-01"
+            }, 
             "response": {
                 "status": {
-                    "code": 200,
-                    "message": "OK"
-                },
+                    "message": "OK", 
+                    "code": 200
+                }, 
                 "headers": {
-                    "cache-control": [
-                        "no-cache"
-                    ],
                     "date": [
-                        "Mon, 01 Jul 2019 22:16:39 GMT"
-                    ],
-                    "x-ms-ratelimit-remaining-subscription-writes": [
-                        "1199"
-                    ],
-                    "content-type": [
-                        "application/json"
-                    ],
+                        "Tue, 02 Jul 2019 01:01:22 GMT"
+                    ], 
                     "content-length": [
                         "288"
+                    ], 
+                    "content-type": [
+                        "application/json"
+                    ], 
+                    "x-ms-ratelimit-remaining-subscription-writes": [
+                        "1199"
+                    ], 
+                    "cache-control": [
+                        "no-cache"
                     ]
-                },
+                }, 
                 "body": {
                     "data": {
                         "keys": [
                             {
-                                "keyName": "key1",
-                                "value": "DEC0DEDITtVwMoyAuTz1LioKkC+gB/EpRlQKNIaszQEhVidjWyP1kLW1z+jo/MGFHKc+t+M20PxoraNCslng9w==",
+                                "keyName": "key1", 
+                                "value": "DEC0DEDITtVwMoyAuTz1LioKkC+gB/EpRlQKNIaszQEhVidjWyP1kLW1z+jo/MGFHKc+t+M20PxoraNCslng9w==", 
                                 "permissions": "FULL"
-                            },
+                            }, 
                             {
-                                "keyName": "key2",
-                                "value": "DEC0DEDITtVwMoyAuTz1LioKkC+gB/EpRlQKNIaszQEhVidjWyP1kLW1z+jo/MGFHKc+t+M20PxoraNCslng9w==",
+                                "keyName": "key2", 
+                                "value": "DEC0DEDITtVwMoyAuTz1LioKkC+gB/EpRlQKNIaszQEhVidjWyP1kLW1z+jo/MGFHKc+t+M20PxoraNCslng9w==", 
                                 "permissions": "FULL"
                             }
                         ]
                     }
                 }
             }
-        },
+        }, 
         {
             "request": {
-                "method": "PUT",
-                "uri": "https://cclgstoragey6akyqpagdt3o.table.core.windows.net/?restype=service&comp=properties",
-                "body": "mock_body",
-                "headers": {}
-            },
+                "body": "mock_body", 
+                "headers": {}, 
+                "method": "PUT", 
+                "uri": "https://cclgstoragey6akyqpagdt3o.table.core.windows.net/?comp=properties&restype=service"
+            }, 
             "response": {
                 "status": {
-                    "code": 202,
-                    "message": "Accepted"
-                },
+                    "message": "Accepted", 
+                    "code": 202
+                }, 
                 "headers": {
+                    "date": [
+                        "Tue, 02 Jul 2019 01:01:22 GMT"
+                    ], 
                     "x-ms-version": [
                         "2018-03-28"
-                    ],
-                    "date": [
-                        "Mon, 01 Jul 2019 22:16:40 GMT"
                     ]
-                },
+                }, 
                 "body": {
                     "string": ""
                 }
             }
-        },
+        }, 
         {
             "request": {
-                "method": "GET",
-                "uri": "https://cclgstoragey6akyqpagdt3o.blob.core.windows.net/?restype=service&comp=properties",
-                "body": null,
-                "headers": {}
-            },
+                "body": null, 
+                "headers": {}, 
+                "method": "GET", 
+                "uri": "https://cclgstoragey6akyqpagdt3o.blob.core.windows.net/?comp=properties&restype=service"
+            }, 
             "response": {
                 "status": {
-                    "code": 200,
-                    "message": "OK"
-                },
+                    "message": "OK", 
+                    "code": 200
+                }, 
                 "headers": {
+                    "date": [
+                        "Tue, 02 Jul 2019 01:01:23 GMT"
+                    ], 
                     "x-ms-version": [
                         "2018-11-09"
-                    ],
-                    "date": [
-                        "Mon, 01 Jul 2019 22:16:41 GMT"
-                    ],
+                    ], 
                     "content-type": [
                         "application/xml"
                     ]
-                },
+                }, 
                 "body": {
                     "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>false</Read><Write>false</Write><Delete>true</Delete><RetentionPolicy><Enabled>true</Enabled><Days>5</Days></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /><DeleteRetentionPolicy><Enabled>false</Enabled></DeleteRetentionPolicy></StorageServiceProperties>"
                 }
             }
-        },
+        }, 
         {
             "request": {
-                "method": "GET",
-                "uri": "https://cclgstoragey6akyqpagdt3o.queue.core.windows.net/?restype=service&comp=properties",
-                "body": null,
-                "headers": {}
-            },
+                "body": null, 
+                "headers": {}, 
+                "method": "GET", 
+                "uri": "https://cclgstoragey6akyqpagdt3o.queue.core.windows.net/?comp=properties&restype=service"
+            }, 
             "response": {
                 "status": {
-                    "code": 200,
-                    "message": "OK"
-                },
+                    "message": "OK", 
+                    "code": 200
+                }, 
                 "headers": {
+                    "date": [
+                        "Tue, 02 Jul 2019 01:01:24 GMT"
+                    ], 
                     "x-ms-version": [
                         "2018-03-28"
-                    ],
-                    "cache-control": [
-                        "no-cache"
-                    ],
-                    "date": [
-                        "Mon, 01 Jul 2019 22:16:41 GMT"
-                    ],
+                    ], 
                     "content-type": [
                         "application/xml"
+                    ], 
+                    "cache-control": [
+                        "no-cache"
                     ]
-                },
+                }, 
                 "body": {
                     "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>false</Read><Write>false</Write><Delete>true</Delete><RetentionPolicy><Enabled>true</Enabled><Days>5</Days></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /></StorageServiceProperties>"
                 }
             }
-        },
+        }, 
         {
             "request": {
-                "method": "GET",
-                "uri": "https://cclgstoragey6akyqpagdt3o.table.core.windows.net/?restype=service&comp=properties",
-                "body": null,
-                "headers": {}
-            },
+                "body": null, 
+                "headers": {}, 
+                "method": "POST", 
+                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_storage/providers/Microsoft.Storage/storageAccounts/cclgstoragey6akyqpagdt3o/listKeys?api-version=2019-04-01"
+            }, 
             "response": {
                 "status": {
-                    "code": 200,
-                    "message": "OK"
-                },
+                    "message": "OK", 
+                    "code": 200
+                }, 
                 "headers": {
+                    "date": [
+                        "Tue, 02 Jul 2019 01:01:24 GMT"
+                    ], 
+                    "content-length": [
+                        "288"
+                    ], 
+                    "content-type": [
+                        "application/json"
+                    ], 
+                    "x-ms-ratelimit-remaining-subscription-writes": [
+                        "1199"
+                    ], 
+                    "cache-control": [
+                        "no-cache"
+                    ]
+                }, 
+                "body": {
+                    "data": {
+                        "keys": [
+                            {
+                                "keyName": "key1", 
+                                "value": "DEC0DEDITtVwMoyAuTz1LioKkC+gB/EpRlQKNIaszQEhVidjWyP1kLW1z+jo/MGFHKc+t+M20PxoraNCslng9w==", 
+                                "permissions": "FULL"
+                            }, 
+                            {
+                                "keyName": "key2", 
+                                "value": "DEC0DEDITtVwMoyAuTz1LioKkC+gB/EpRlQKNIaszQEhVidjWyP1kLW1z+jo/MGFHKc+t+M20PxoraNCslng9w==", 
+                                "permissions": "FULL"
+                            }
+                        ]
+                    }
+                }
+            }
+        }, 
+        {
+            "request": {
+                "body": null, 
+                "headers": {}, 
+                "method": "GET", 
+                "uri": "https://cclgstoragey6akyqpagdt3o.table.core.windows.net/?comp=properties&restype=service"
+            }, 
+            "response": {
+                "status": {
+                    "message": "OK", 
+                    "code": 200
+                }, 
+                "headers": {
+                    "date": [
+                        "Tue, 02 Jul 2019 01:01:25 GMT"
+                    ], 
                     "x-ms-version": [
                         "2018-03-28"
-                    ],
-                    "date": [
-                        "Mon, 01 Jul 2019 22:16:41 GMT"
-                    ],
+                    ], 
                     "content-type": [
                         "application/xml"
                     ]
-                },
+                }, 
                 "body": {
                     "string": "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><StorageServiceProperties><Logging><Version>1.0</Version><Read>false</Read><Write>false</Write><Delete>true</Delete><RetentionPolicy><Enabled>true</Enabled><Days>5</Days></RetentionPolicy></Logging><HourMetrics><Version>1.0</Version><Enabled>true</Enabled><IncludeAPIs>true</IncludeAPIs><RetentionPolicy><Enabled>true</Enabled><Days>7</Days></RetentionPolicy></HourMetrics><MinuteMetrics><Version>1.0</Version><Enabled>false</Enabled><RetentionPolicy><Enabled>false</Enabled></RetentionPolicy></MinuteMetrics><Cors /></StorageServiceProperties>"
                 }

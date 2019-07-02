@@ -284,7 +284,7 @@ class SetLogSettingsAction(AzureBaseAction):
             - name: enable-blob-storage-logging
               resource: azure.storage
               actions:
-                - type: update-log-settings
+                - type: set-log-settings
                   storage-types: [blob]
                   retention: 5
                   log: [write, delete]
