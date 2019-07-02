@@ -265,8 +265,8 @@ class StorageDiagnosticSettingsFilter(ValueFilter):
         return storage_account[storage_prefix_property]
 
 
-@Storage.action_registry.register('update-log-settings')
-class UpdateLogSettingsAction(AzureBaseAction):
+@Storage.action_registry.register('set-log-settings')
+class SetLogSettingsAction(AzureBaseAction):
     """Action that updates the logging settings on storage accounts. The action requires
     specifying an array of storage types that will be impacted by the action (blob, queue, table),
     retention (number in days; 0-365), and an array of log settings to enable (read, write, delete).
@@ -294,7 +294,7 @@ class UpdateLogSettingsAction(AzureBaseAction):
     WRITE = 'write'
     DELETE = 'delete'
 
-    schema = type_schema('update-log-settings',
+    schema = type_schema('set-log-settings',
                          required=['storage-types', 'log', 'retention'],
                          **{
                              'storage-types': {
@@ -316,10 +316,10 @@ class UpdateLogSettingsAction(AzureBaseAction):
                          )
 
     def __init__(self, data, manager=None):
-        super(UpdateLogSettingsAction, self).__init__(data, manager)
-        self.storage_types = data.get('storage-types')
-        self.logs_to_enable = data.get('log')
-        self.retention = data.get('retention')
+        super(SetLogSettingsAction, self).__init__(data, manager)
+        self.storage_types = data['storage-types']
+        self.logs_to_enable = data['log']
+        self.retention = data['retention']
         self.log = logging.getLogger('custodian.azure.storage')
         self.token = None
 
@@ -330,7 +330,7 @@ class UpdateLogSettingsAction(AzureBaseAction):
 
     def process_in_parallel(self, resources, event):
         self.token = StorageUtilities.get_storage_token(self.session)
-        return super(UpdateLogSettingsAction, self).process_in_parallel(resources, event)
+        return super(SetLogSettingsAction, self).process_in_parallel(resources, event)
 
     def _process_resource(self, resource, event=None):
         retention = RetentionPolicy(enabled=self.retention != 0, days=self.retention)

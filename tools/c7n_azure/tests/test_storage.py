@@ -250,7 +250,7 @@ class StorageTest(BaseTest):
                  'value': 'cclgstorage*'}],
             'actions': [
                 {
-                    'type': 'update-log-settings',
+                    'type': 'set-log-settings',
                     'storage-types': ['blob', 'queue', 'table'],
                     'retention': 5,
                     'log': ['read', 'write', 'delete']
@@ -299,7 +299,7 @@ class StorageTest(BaseTest):
                  'value': 'cclgstorage*'}],
             'actions': [
                 {
-                    'type': 'update-log-settings',
+                    'type': 'set-log-settings',
                     'storage-types': ['blob', 'queue', 'table'],
                     'retention': 5,
                     'log': ['delete']
@@ -340,7 +340,7 @@ class StorageTest(BaseTest):
                  'value': 'cclgstorage*'}],
             'actions': [
                 {
-                    'type': 'update-log-settings',
+                    'type': 'set-log-settings',
                     'storage-types': ['blob', 'queue', 'table'],
                     'retention': 0,
                     'log': ['read', 'write', 'delete']
