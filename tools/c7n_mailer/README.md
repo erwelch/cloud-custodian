@@ -584,7 +584,7 @@ The ``c7n-mailer-replay`` entrypoint can be used to test templates for Azure wit
 * ``-T`` | ``--template-print`` 
 * ``-d`` | ``--dry-run`` 
   
-Testing these templates without either of these arguments will throw an error as it will attempt
+Running ``c7n-mailer-replay`` without either of these arguments will throw an error as it will attempt
 to authorize with AWS. 
 
 The following is an example for retrieving a sample message to test against templates:
@@ -595,7 +595,7 @@ The following is an example for retrieving a sample message to test against temp
 ```
 $ az storage message get --queue-name <queuename> --account-name <storageaccountname> --query '[].content' > test_message.gz
 ```
-* The example message can be provided to ``c7n-mailer-replay`` to test example templates by running:
+* The example message can be provided to ``c7n-mailer-replay`` by running:
 
 ```
 $ c7n-mailer-replay test_message.gz -T --config mailer.yml
