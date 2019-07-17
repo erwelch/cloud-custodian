@@ -1,6 +1,0 @@
-queue_url: asq://custodianstorage15272.queue.core.windows.net/mailer-queue
-from_address: cloud@custodian.com
-sendgrid_api_key: 
-function_properties:
-  servicePlan:
-    resourceGroupName: cloud-custodian-test-mailer31264
