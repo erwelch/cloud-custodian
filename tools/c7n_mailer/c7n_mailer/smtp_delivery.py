@@ -14,30 +14,43 @@
 
 
 import smtplib
+
 import c7n_mailer.utils as utils
 
 
 class SmtpDelivery(object):
 
     def __init__(self, config, session, logger):
+        self.logger = logger
         smtp_server = config['smtp_server']
         smtp_port = int(config.get('smtp_port', 25))
         smtp_ssl = bool(config.get('smtp_ssl', True))
         smtp_username = config.get('smtp_username')
         smtp_password = utils.decrypt(config, logger, session, 'smtp_password')
 
+        self.logger.info('Opening SMTP connection to server: {}.'.format(smtp_server))
         smtp_connection = smtplib.SMTP(smtp_server, smtp_port)
         if smtp_ssl:
+            self.logger.info('Establishing SSL connection for SMTP delivery.')
             smtp_connection.starttls()
             smtp_connection.ehlo()
 
         if smtp_username or smtp_password:
-            smtp_connection.login(smtp_username, smtp_password)
+            try:
+                self.logger.info('Logging into SMTP server.')
+                smtp_connection.login(smtp_username, smtp_password)
+            except Exception as error:
+                self.logger.exception('Failed to login to SMTP server with error: {}'.format(error))
 
         self._smtp_connection = smtp_connection
 
     def __del__(self):
+        self.logger.info('Closing SMTP connection.')
         self._smtp_connection.quit()
 
     def send_message(self, message, to_addrs):
-        self._smtp_connection.sendmail(message['From'], to_addrs, message.as_string())
+        self.logger.info('Sending message to SMTP server.')
+        try:
+            self._smtp_connection.sendmail(message['From'], to_addrs, message.as_string())
+        except Exception as error:
+            self.logger.exception('Failed to send message with error: {}'.format(error))
