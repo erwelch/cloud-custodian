@@ -18,8 +18,8 @@ import unittest
 import zlib
 
 from c7n_azure.storage_utils import StorageUtilities
-from c7n_mailer.azure.azure_queue_processor import MailerAzureQueueProcessor
-from c7n_mailer.azure.sendgrid_delivery import SendGridDelivery
+from c7n_mailer.azure_mailer.azure_queue_processor import MailerAzureQueueProcessor
+from c7n_mailer.azure_mailer.sendgrid_delivery import SendGridDelivery
 from common import MAILER_CONFIG_AZURE, ASQ_MESSAGE, ASQ_MESSAGE_TAG, logger
 
 from mock import MagicMock, patch
