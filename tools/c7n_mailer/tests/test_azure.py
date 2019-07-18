@@ -90,7 +90,7 @@ class AzureTest(unittest.TestCase):
         self.assertTrue(result)
         mock_send.assert_called()
 
-    @patch('c7n_mailer.azure.azure_queue_processor.SmtpDelivery')
+    @patch('c7n_mailer.azure_mailer.azure_queue_processor.SmtpDelivery')
     def test_smtp_delivery(self, mock_smtp):
         smtp_mailer_config = {
             'queue_url': 'asq://storageaccount.queue.core.windows.net/queuename',
@@ -102,7 +102,7 @@ class AzureTest(unittest.TestCase):
             'smtp_password': 'password'
         }
 
-        with patch('c7n_mailer.azure.sendgrid_delivery.SendGridDelivery'
+        with patch('c7n_mailer.azure_mailer.sendgrid_delivery.SendGridDelivery'
                    '.get_to_addrs_sendgrid_messages_map',
                    return_value={('mock@test.com',): self.loaded_message}):
             azure_processor = MailerAzureQueueProcessor(smtp_mailer_config, logger)
