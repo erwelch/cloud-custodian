@@ -20,7 +20,10 @@ import zlib
 from c7n_azure.storage_utils import StorageUtilities
 from c7n_mailer.azure_mailer.azure_queue_processor import MailerAzureQueueProcessor
 from c7n_mailer.azure_mailer.sendgrid_delivery import SendGridDelivery
-from common import MAILER_CONFIG_AZURE, ASQ_MESSAGE, ASQ_MESSAGE_TAG, logger
+from common import (
+    MAILER_CONFIG_AZURE, ASQ_MESSAGE, ASQ_MESSAGE_TAG,
+    ASQ_MESSAGE_SLACK, ASQ_MESSAGE_DATADOG, logger
+)
 from mock import MagicMock, patch, call
 
 
@@ -109,3 +112,46 @@ class AzureTest(unittest.TestCase):
             self.assertTrue(azure_processor.process_azure_queue_message(self.compressed_message))
             mock_smtp.assert_has_calls(
                 [call().send_message(message=self.loaded_message, to_addrs=['mock@test.com'])])
+
+    @patch('c7n_mailer.slack_delivery.SlackDelivery')
+    def test_slack_delivery(self, mock_slack):
+        slack_mailer_config = {
+            'queue_url': 'asq://storageaccount.queue.core.windows.net/queuename',
+            'slack_token': 'mock_token'
+        }
+
+        slack_compressed_message = MagicMock()
+        slack_compressed_message.content = base64.b64encode(
+            zlib.compress(ASQ_MESSAGE_SLACK.encode('utf8')))
+        slack_loaded_message = json.loads(ASQ_MESSAGE_SLACK)
+
+        mock_slack.return_value\
+            .get_to_addrs_slack_messages_map.return_value = 'mock_slack_message_map'
+
+        azure_processor = MailerAzureQueueProcessor(slack_mailer_config, logger)
+
+        self.assertTrue(azure_processor.process_azure_queue_message(slack_compressed_message))
+        mock_slack.assert_has_calls(
+            [call().slack_handler(slack_loaded_message, 'mock_slack_message_map')])
+
+    @patch('c7n_mailer.datadog_delivery.DataDogDelivery')
+    def test_datadog_delivery(self, mock_datadog):
+        datadog_mailer_config = {
+            'queue_url': 'asq://storageaccount.queue.core.windows.net/queuename',
+            'datadog_api_key': 'mock_api_key',
+            'datadog_application_key': 'mock_application_key'
+        }
+
+        datadog_compressed_message = MagicMock()
+        datadog_compressed_message.content = base64.b64encode(
+            zlib.compress(ASQ_MESSAGE_DATADOG.encode('utf8')))
+        datadog_loaded_message = json.loads(ASQ_MESSAGE_DATADOG)
+
+        mock_datadog.return_value\
+            .get_datadog_message_packages.return_value = 'mock_datadog_message_map'
+
+        azure_processor = MailerAzureQueueProcessor(datadog_mailer_config, logger)
+
+        self.assertTrue(azure_processor.process_azure_queue_message(datadog_compressed_message))
+        mock_datadog.assert_has_calls(
+            [call().deliver_datadog_messages('mock_datadog_message_map', datadog_loaded_message)])
