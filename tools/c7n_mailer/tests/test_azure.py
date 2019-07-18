@@ -21,8 +21,7 @@ from c7n_azure.storage_utils import StorageUtilities
 from c7n_mailer.azure.azure_queue_processor import MailerAzureQueueProcessor
 from c7n_mailer.azure.sendgrid_delivery import SendGridDelivery
 from common import MAILER_CONFIG_AZURE, ASQ_MESSAGE, ASQ_MESSAGE_TAG, logger
-
-from mock import MagicMock, patch
+from mock import MagicMock, patch, call
 
 
 class AzureTest(unittest.TestCase):
@@ -88,3 +87,23 @@ class AzureTest(unittest.TestCase):
         result = sendgrid_delivery.sendgrid_handler(self.loaded_message, sendgrid_messages)
         self.assertTrue(result)
         mock_send.assert_called()
+
+    @patch('c7n_mailer.azure.azure_queue_processor.SmtpDelivery')
+    def test_smtp_delivery(self, mock_smtp):
+        smtp_mailer_config = {
+            'queue_url': 'asq://storageaccount.queue.core.windows.net/queuename',
+            'from_address': 'you@youremail.com',
+            'smtp_port': 25,
+            'smtp_ssl': True,
+            'smtp_server': 'test_server',
+            'smtp_username': 'user',
+            'smtp_password': 'password'
+        }
+
+        with patch('c7n_mailer.azure.sendgrid_delivery.SendGridDelivery'
+                   '.get_to_addrs_sendgrid_messages_map',
+                   return_value={('mock@test.com',): self.loaded_message}):
+            azure_processor = MailerAzureQueueProcessor(smtp_mailer_config, logger)
+            self.assertTrue(azure_processor.process_azure_queue_message(self.compressed_message))
+            mock_smtp.assert_has_calls(
+                [call().send_message(message=self.loaded_message, to_addrs=['mock@test.com'])])
