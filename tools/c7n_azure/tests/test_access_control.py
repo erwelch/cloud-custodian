@@ -105,7 +105,7 @@ class AccessControlTest(BaseTest):
         sub_scope = "/subscriptions/111-111-1111"
         resource_group_scope = sub_scope + "/resourceGroups/foo"
         management_group_scope = "/providers/Microsoft.Management/managementGroups/foo"
-        
+
         scope_filter = ScopeFilter(MagicMock())
 
         sub_value = 'subscription'
