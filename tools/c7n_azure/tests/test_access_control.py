@@ -108,13 +108,13 @@ class AccessControlTest(BaseTest):
 
         scope_filter = ScopeFilter(MagicMock())
 
-        sub_value = 'subscription'
-        self.assertTrue(scope_filter.is_scope(sub_scope, sub_value))
-        self.assertFalse(scope_filter.is_scope(resource_group_scope, sub_value))
-        self.assertFalse(scope_filter.is_scope(management_group_scope, sub_value))
-        self.assertFalse(scope_filter.is_scope("subscriptions", sub_value))
-        self.assertFalse(scope_filter.is_scope("/subscription", sub_value))
-        self.assertFalse(scope_filter.is_scope("/foo/bar", sub_value))
+        sub_type = 'subscription'
+        self.assertTrue(scope_filter.is_scope(sub_scope, sub_type))
+        self.assertFalse(scope_filter.is_scope(resource_group_scope, sub_type))
+        self.assertFalse(scope_filter.is_scope(management_group_scope, sub_type))
+        self.assertFalse(scope_filter.is_scope("subscriptions", sub_type))
+        self.assertFalse(scope_filter.is_scope("/subscription", sub_type))
+        self.assertFalse(scope_filter.is_scope("/foo/bar", sub_type))
 
     def test_scope_filter_resource_group(self):
         sub_scope = "/subscriptions/111-111-1111"
@@ -123,17 +123,17 @@ class AccessControlTest(BaseTest):
 
         scope_filter = ScopeFilter(MagicMock())
 
-        rg_value = 'resource-group'
+        rg_type = 'resource-group'
 
-        self.assertTrue(scope_filter.is_scope(resource_group_scope, rg_value))
-        self.assertFalse(scope_filter.is_scope(sub_scope, rg_value))
-        self.assertFalse(scope_filter.is_scope(management_group_scope, rg_value))
-        self.assertFalse(scope_filter.is_scope("/subscriptions/resourceGroups", rg_value))
-        self.assertFalse(scope_filter.is_scope("/subscriptions/resourceGroups/", rg_value))
-        self.assertFalse(scope_filter.is_scope("/subscriptions/resourceGroup/", rg_value))
-        self.assertFalse(scope_filter.is_scope("/subscription/resourceGroups/foo", rg_value))
-        self.assertFalse(scope_filter.is_scope("/foo/bar/xyz", rg_value))
-        self.assertFalse(scope_filter.is_scope(resource_group_scope + "/vm/bar", rg_value))
+        self.assertTrue(scope_filter.is_scope(resource_group_scope, rg_type))
+        self.assertFalse(scope_filter.is_scope(sub_scope, rg_type))
+        self.assertFalse(scope_filter.is_scope(management_group_scope, rg_type))
+        self.assertFalse(scope_filter.is_scope("/subscriptions/resourceGroups", rg_type))
+        self.assertFalse(scope_filter.is_scope("/subscriptions/resourceGroups/", rg_type))
+        self.assertFalse(scope_filter.is_scope("/subscriptions/resourceGroup/", rg_type))
+        self.assertFalse(scope_filter.is_scope("/subscription/resourceGroups/foo", rg_type))
+        self.assertFalse(scope_filter.is_scope("/foo/bar/xyz", rg_type))
+        self.assertFalse(scope_filter.is_scope(resource_group_scope + "/vm/bar", rg_type))
 
     def test_scope_filter_management_group(self):
         sub_scope = "/subscriptions/111-111-1111"
@@ -142,8 +142,8 @@ class AccessControlTest(BaseTest):
 
         scope_filter = ScopeFilter(MagicMock())
 
-        mg_value = 'management-group'
+        mg_type = 'management-group'
 
-        self.assertTrue(scope_filter.is_scope(management_group_scope, mg_value))
-        self.assertFalse(scope_filter.is_scope(resource_group_scope, mg_value))
-        self.assertFalse(scope_filter.is_scope(sub_scope, mg_value))
+        self.assertTrue(scope_filter.is_scope(management_group_scope, mg_type))
+        self.assertFalse(scope_filter.is_scope(resource_group_scope, mg_type))
+        self.assertFalse(scope_filter.is_scope(sub_scope, mg_type))
