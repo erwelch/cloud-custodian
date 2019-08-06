@@ -43,4 +43,4 @@ class EventHub(ArmResourceManager):
             'location',
             'resourceGroup'
         )
-        resource_type = 'Microsoft.EventHub/namespaces/eventhubs'
+        resource_type = 'Microsoft.EventHub/namespaces'
