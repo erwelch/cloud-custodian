@@ -1,4 +1,4 @@
-# Copyright 2018 Capital One Services, LLC
+# Copyright 2019 Microsoft Corporation, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,6 +41,8 @@ class EventHub(ArmResourceManager):
         default_report_fields = (
             'name',
             'location',
-            'resourceGroup'
+            'resourceGroup',
+            'sku.name',
+            'properties.isAutoInflateEnabled'
         )
         resource_type = 'Microsoft.EventHub/namespaces'

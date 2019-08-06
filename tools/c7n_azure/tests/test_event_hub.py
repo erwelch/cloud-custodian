@@ -1,4 +1,4 @@
-# Copyright 2015-2018 Capital One Services, LLC
+# Copyright 2019 Microsoft Corporation, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ from azure_common import BaseTest, arm_template
 
 
 class EventHubTest(BaseTest):
-    def setUp(self):
-        super(EventHubTest, self).setUp()
 
     def test_event_hub_schema_validate(self):
         with self.sign_out_patch():
