@@ -35,7 +35,8 @@ class EventHub(ArmResourceManager):
             resource: azure.eventhub
             filters:
               - type: firewall-rules
-                include: ['1.2.2.128/25']
+                include:
+                    - '1.2.2.128/25'
 
     """
 
