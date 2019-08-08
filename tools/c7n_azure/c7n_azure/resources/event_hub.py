@@ -17,7 +17,7 @@ import logging
 from c7n_azure.filters import FirewallRulesFilter
 from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
-from netaddr import IPRange, IPSet
+from netaddr import IPSet
 
 
 @resources.register('eventhub')
@@ -77,15 +77,6 @@ class EventHubFirewallRulesFilter(FirewallRulesFilter):
             resource['resourceGroup'],
             resource['name'])
 
-        resource_rules = IPSet()
-
-        for r in query.ip_rules:
-            ip_mask = r.ip_mask
-            # if CIDR
-            if '/' in ip_mask:
-                resource_rules.add(ip_mask)
-            # else is ipv4:
-            else:
-                resource_rules.add(IPRange(ip_mask, ip_mask))
+        resource_rules = IPSet([r.ip_mask for r in query.ip_rules])
 
         return resource_rules

@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from azure_common import BaseTest, arm_template
+from azure_common import BaseTest, arm_template, cassette_name
 
 
 class EventHubTest(BaseTest):
@@ -41,7 +41,7 @@ class EventHubTest(BaseTest):
         resources = p.run()
         self.assertEqual(len(resources), 1)
 
-    @arm_template('eventhub.json')
+    @cassette_name('firewall')
     def test_firewall_rules_include_cidr(self):
         p = self.load_policy({
             'name': 'test-azure-eventhub',
@@ -58,7 +58,7 @@ class EventHubTest(BaseTest):
         resources = p.run()
         self.assertEqual(len(resources), 1)
 
-    @arm_template('eventhub.json')
+    @cassette_name('firewall')
     def test_firewall_rules_not_include_cidr(self):
         p = self.load_policy({
             'name': 'test-azure-eventhub',
@@ -75,7 +75,7 @@ class EventHubTest(BaseTest):
         resources = p.run()
         self.assertEqual(len(resources), 0)
 
-    @arm_template('eventhub.json')
+    @cassette_name('firewall')
     def test_firewall_rules_ranges(self):
         p = self.load_policy({
             'name': 'test-azure-eventhub',
@@ -92,7 +92,7 @@ class EventHubTest(BaseTest):
         resources = p.run()
         self.assertEqual(1, len(resources))
 
-    @arm_template('eventhub.json')
+    @cassette_name('firewall')
     def test_firewall_rules_not_ranges(self):
         p = self.load_policy({
             'name': 'test-azure-eventhub',
@@ -109,7 +109,7 @@ class EventHubTest(BaseTest):
         resources = p.run()
         self.assertEqual(0, len(resources))
 
-    @arm_template('eventhub.json')
+    @cassette_name('firewall')
     def test_firewall_rules_equal(self):
         p = self.load_policy({
             'name': 'test-azure-eventhub',
@@ -126,7 +126,7 @@ class EventHubTest(BaseTest):
         resources = p.run()
         self.assertEqual(1, len(resources))
 
-    @arm_template('eventhub.json')
+    @cassette_name('firewall')
     def test_firewall_rules_not_equal(self):
         p = self.load_policy({
             'name': 'test-azure-eventhub',
