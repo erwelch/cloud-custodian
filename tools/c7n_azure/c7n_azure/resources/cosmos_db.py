@@ -29,6 +29,7 @@ from c7n_azure.provider import resources
 from c7n_azure.query import ChildResourceManager, ChildTypeInfo
 from c7n_azure.resources.arm import ArmResourceManager
 from c7n_azure.utils import ResourceIdParser
+from c7n_azure.lookup import Lookup
 
 try:
     from functools import lru_cache
@@ -347,7 +348,12 @@ class CosmosDBReplaceOfferAction(AzureBaseAction):
         'replace-offer',
         required=['throughput'],
         **{
-            'throughput': {'type': 'number'}
+            'throughput': {
+                'oneOf': [
+                    {'type': 'number'},
+                    Lookup.schema
+                ]
+            }
         }
     )
 
@@ -371,9 +377,10 @@ class CosmosDBReplaceOfferAction(AzureBaseAction):
             offer = resources[0]['c7n:offer'][0]
             new_offer = dict(offer)
             new_offer.pop('c7n:MatchedFilters', None)
-            new_offer['content']['offerThroughput'] = self.data['throughput']
             new_offer = data_client.ReplaceOffer(offer['_self'], new_offer)
             for resource in resources:
+                throughput = int(Lookup.extract(self.data['throughput'], resource))
+                new_offer['content']['offerThroughput'] = throughput
                 resource['c7n:offer'] = [new_offer]
 
         except Exception as e:

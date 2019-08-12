@@ -18,6 +18,7 @@ from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
 from c7n_azure.actions.base import AzureBaseAction
 from azure.mgmt.web import models
+from c7n_azure.lookup import Lookup
 
 
 @resources.register('appserviceplan')
@@ -78,10 +79,17 @@ class ResizePlan(AzureBaseAction):
     schema = utils.type_schema(
         'resize-plan',
         **{
-            'size': {'type': 'string', 'enum':
+            'size': {'oneOf': [
+                {'type': 'string', 'enum':
                     ['F1', 'B1', 'B2', 'B3', 'D1', 'S1', 'S2', 'S3', 'P1', 'P2',
-                     'P3', 'P1V2', 'P2V2', 'P3v2', 'PC2', 'PC3', 'PC4']},
-            'count': {'type': 'integer'}
+                     'P3', 'P1V2', 'P2V2', 'P3v2', 'PC2', 'PC3', 'PC4']
+                 },
+                Lookup.schema
+            ]},
+            'count': {'oneOf': [
+                {'type': 'integer'},
+                Lookup.schema
+            ]}
         }
     )
 
@@ -92,13 +100,13 @@ class ResizePlan(AzureBaseAction):
         model = models.AppServicePlan(location=resource['location'])
 
         if 'size' in self.data:
-            size = self.data.get('size')
+            size = Lookup.extract(self.data.get('size'), resource)
             model.sku = models.SkuDescription()
             model.sku.tier = ResizePlan.get_sku_name(size)
             model.sku.name = size
 
         if 'count' in self.data:
-            model.target_worker_count = self.data.get('count')
+            model.target_worker_count = int(Lookup.extract(self.data.get('count'), resource))
 
         try:
             self.client.app_service_plans.update(resource['resourceGroup'], resource['name'], model)

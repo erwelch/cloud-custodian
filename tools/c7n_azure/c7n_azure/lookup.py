@@ -13,20 +13,25 @@
 # limitations under the License.
 
 import jmespath
-from jsonschema import Draft4Validator as Validator
+from jsonschema import validate, exceptions
 
 
 class Lookup(object):
+    RESOURCE_SOURCE = 'resource'
+
     schema = {
+        'type': 'object',
+        'properties': {
             'source': {'type': 'string', 'enum': ['resource']},
-            'value': {'type': 'string'},
+            'key': {'type': 'string'},
             'default-value': {'oneOf': [
                 {'type': 'string'},
                 {'type': 'number'},
                 {'type': 'boolean'}
-                ]
-            }
-        }
+            ]}
+        },
+        'required': ['source', 'key']
+    }
 
     @staticmethod
     def extract(source, data=None):
@@ -40,15 +45,24 @@ class Lookup(object):
         if type(source) is not dict:
             return False
 
-        validator = Validator(Lookup.schema)
-        return not list(validator.iter_errors(source))
+        try:
+            validate(instance=source, schema=Lookup.schema)
+            return True
+        except exceptions.ValidationError:
+            return False
 
     @staticmethod
     def get_value(source, data=None):
-        if source['source'] == 'resource':
+        if source['source'] == Lookup.RESOURCE_SOURCE:
             return Lookup.get_value_from_resource(source, data)
 
     @staticmethod
     def get_value_from_resource(source, resource):
-        value = jmespath.search(source['value'], resource)
-        return value if not None else source['default-value']
+        value = jmespath.search(source['key'], resource)
+
+        if value is not None:
+            return value
+        if not source['default-value']:
+            raise Exception('Lookup for key, {}, returned None'.format(source['key']))
+        else:
+            return source['default-value']

@@ -79,6 +79,24 @@ class AppServicePlanTest(BaseTest):
         self.assertEqual(len(resources), 1)
 
     @arm_template('appserviceplan.json')
+    def test_resize_plan_from_resource(self):
+        p = self.load_policy({
+            'name': 'test-azure-appserviceplan',
+            'resource': 'azure.appserviceplan',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctest-appserviceplan'}],
+            'actions': [
+                {'type': 'resize-plan',
+                 'size': 'F1'}],
+        })
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+    @arm_template('appserviceplan.json')
     def test_on_off_hours(self):
         t = datetime.datetime.now(tzutils.gettz("pt"))
         t = t.replace(year=2018, month=8, day=24, hour=18, minute=30)

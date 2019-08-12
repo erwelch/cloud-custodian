@@ -59,8 +59,7 @@ class Tag(AzureBaseAction):
             'value': {
                 'oneOf': [
                     {'type': 'string'},
-                    {'type': 'object',
-                     'properties': Lookup.schema}
+                    Lookup.schema
                 ]
             },
             'tag': {'type': 'string'},
