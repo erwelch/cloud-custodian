@@ -14,9 +14,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import datetime
-from dateutil import tz as tzutils
 
 from azure_common import BaseTest, arm_template
+from dateutil import tz as tzutils
 
 from c7n.testing import mock_datetime_now
 
@@ -79,8 +79,25 @@ class AppServicePlanTest(BaseTest):
         self.assertEqual(len(resources), 1)
 
     @arm_template('appserviceplan.json')
-    def test_resize_plan_from_resource(self):
-        p = self.load_policy({
+    def test_resize_plan_from_resource_tag(self):
+        p1 = self.load_policy({
+            'name': 'test-azure-appserviceplan',
+            'resource': 'azure.appserviceplan',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctest-appserviceplan'}],
+            'actions': [
+                {'type': 'tag',
+                 'tag': 'sku',
+                 'value': 'B1'}]
+        })
+
+        p1.run()
+
+        p2 = self.load_policy({
             'name': 'test-azure-appserviceplan',
             'resource': 'azure.appserviceplan',
             'filters': [
@@ -91,9 +108,13 @@ class AppServicePlanTest(BaseTest):
                  'value': 'cctest-appserviceplan'}],
             'actions': [
                 {'type': 'resize-plan',
-                 'size': 'F1'}],
+                 'size': {
+                     'source': 'resource',
+                     'key': 'tags.sku'
+                 }}],
         })
-        resources = p.run()
+
+        resources = p2.run()
         self.assertEqual(len(resources), 1)
 
     @arm_template('appserviceplan.json')
