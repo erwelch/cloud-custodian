@@ -68,7 +68,7 @@ class Lookup(object):
 
         if value is not None:
             return value
-        if not 'default-value' in source:
+        if 'default-value' not in source:
             raise Exception('Lookup for key, {}, returned None'.format(source['key']))
         else:
             return source['default-value']
