@@ -100,7 +100,6 @@ class AppServicePlanTest(BaseTest):
         resources = p.run()
         self.assertEqual(1, len(resources))
 
-
     @arm_template('appserviceplan.json')
     def test_resize_plan_from_resource_tag(self):
         p1 = self.load_policy({
@@ -138,7 +137,6 @@ class AppServicePlanTest(BaseTest):
 
         resources = p2.run()
         self.assertEqual(len(resources), 1)
-
 
     @arm_template('appserviceplan.json')
     @patch('c7n_azure.resources.appserviceplan.ResizePlan.log.info')
