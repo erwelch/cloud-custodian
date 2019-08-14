@@ -109,17 +109,13 @@ class ResizePlan(AzureBaseAction):
     schema = utils.type_schema(
         'resize-plan',
         **{
-            'size': {'oneOf': [
-                {'type': 'string', 'enum':
-                    ['F1', 'B1', 'B2', 'B3', 'D1', 'S1', 'S2', 'S3', 'P1', 'P2',
-                     'P3', 'P1V2', 'P2V2', 'P3v2', 'PC2', 'PC3', 'PC4']
-                 },
-                Lookup.schema
-            ]},
-            'count': {'oneOf': [
-                {'type': 'integer'},
-                Lookup.schema
-            ]}
+            'size': Lookup.lookup_type({'type': 'string',
+                                        'enum': ['F1', 'B1', 'B2', 'B3', 'D1',
+                                                 'S1', 'S2', 'S3', 'P1', 'P2',
+                                                 'P3', 'P1V2', 'P2V2', 'P3v2',
+                                                 'PC2', 'PC3', 'PC4']
+                                        }),
+            'count': Lookup.lookup_type({'type': 'integer'})
         }
     )
 

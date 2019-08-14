@@ -4,7 +4,7 @@
         {
             "request": {
                 "method": "GET",
-                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/providers/Microsoft.Web/serverfarms?api-version=2018-02-01",
+                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan-win?api-version=2018-02-01",
                 "body": null,
                 "headers": {}
             },
@@ -14,437 +14,32 @@
                     "message": "OK"
                 },
                 "headers": {
-                    "date": [
-                        "Tue, 13 Aug 2019 00:37:36 GMT"
-                    ],
-                    "cache-control": [
-                        "no-cache"
-                    ],
                     "content-type": [
                         "application/json"
                     ],
-                    "content-length": [
-                        "6485"
-                    ]
-                },
-                "body": {
-                    "data": {
-                        "value": [
-                            {
-                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan",
-                                "name": "cctest-appserviceplan",
-                                "type": "Microsoft.Web/serverfarms",
-                                "kind": "app",
-                                "location": "Central US",
-                                "properties": {
-                                    "serverFarmId": 13753717,
-                                    "name": "cctest-appserviceplan",
-                                    "workerSize": "Default",
-                                    "workerSizeId": 0,
-                                    "workerTierName": null,
-                                    "numberOfWorkers": 1,
-                                    "currentWorkerSize": null,
-                                    "currentWorkerSizeId": null,
-                                    "currentNumberOfWorkers": null,
-                                    "status": "Ready",
-                                    "webSpace": "test_appserviceplan-CentralUSwebspace",
-                                    "subscription": null,
-                                    "adminSiteName": null,
-                                    "hostingEnvironment": null,
-                                    "hostingEnvironmentProfile": null,
-                                    "maximumNumberOfWorkers": 10,
-                                    "planName": "VirtualDedicatedPlan",
-                                    "adminRuntimeSiteName": null,
-                                    "computeMode": "Shared",
-                                    "siteMode": null,
-                                    "geoRegion": "Central US",
-                                    "perSiteScaling": null,
-                                    "maximumElasticWorkerCount": null,
-                                    "numberOfSites": 0,
-                                    "hostingEnvironmentId": null,
-                                    "isSpot": null,
-                                    "spotExpirationTime": null,
-                                    "freeOfferExpirationTime": null,
-                                    "tags": null,
-                                    "kind": "app",
-                                    "resourceGroup": "test_appserviceplan",
-                                    "reserved": null,
-                                    "isXenon": null,
-                                    "hyperV": null,
-                                    "mdmId": null,
-                                    "targetWorkerCount": null,
-                                    "targetWorkerSizeId": null,
-                                    "provisioningState": null,
-                                    "webSiteId": null,
-                                    "existingServerFarmIds": null
-                                },
-                                "sku": {
-                                    "name": "S1",
-                                    "tier": "Standard",
-                                    "size": "S1",
-                                    "family": "S",
-                                    "capacity": 1
-                                }
-                            }
-                        ],
-                        "nextLink": null,
-                        "id": null
-                    }
-                }
-            }
-        },
-        {
-            "request": {
-                "method": "GET",
-                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/providers/Microsoft.Web?api-version=2018-05-01",
-                "body": null,
-                "headers": {}
-            },
-            "response": {
-                "status": {
-                    "code": 200,
-                    "message": "OK"
-                },
-                "headers": {
-                    "date": [
-                        "Tue, 13 Aug 2019 00:37:37 GMT"
-                    ],
-                    "content-length": [
-                        "43261"
-                    ],
                     "cache-control": [
                         "no-cache"
                     ],
-                    "content-type": [
-                        "application/json; charset=utf-8"
-                    ]
-                },
-                "body": {
-                    "data": {
-                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/providers/Microsoft.Web",
-                        "namespace": "Microsoft.Web",
-                        "authorization": {
-                            "applicationId": "abfa0a7c-a6b6-4736-8310-5855508787cd",
-                            "roleDefinitionId": "f47ed98b-b063-4a5b-9e10-4b9b44fa7735"
-                        },
-                        "resourceTypes": [
-                            {
-                                "resourceType": "publishingUsers",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "ishostnameavailable",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "validate",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "isusernameavailable",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "sourceControls",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "availableStacks",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "listSitesAssignedToHostName",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/getNetworkPolicies",
-                                "apiVersions": [
-                                    "2018-02-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "sites/networkConfig",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "sites/slots/networkConfig",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "sites/hostNameBindings",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "sites/slots/hostNameBindings",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "operations",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "certificates",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "serverFarms",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "sites",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "sites/slots",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "runtimes",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "recommendations",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "resourceHealthMetadata",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "georegions",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "sites/premieraddons",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "hostingEnvironments",
-                                "apiVersions": [
-                                    "2019-02-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "hostingEnvironments/multiRolePools",
-                                "apiVersions": [
-                                    "2019-02-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "hostingEnvironments/workerPools",
-                                "apiVersions": [
-                                    "2019-02-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "deploymentLocations",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "functions",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "deletedSites",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/deletedSites",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "ishostingenvironmentnameavailable",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/deleteVirtualNetworkOrSubnets",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "connections",
-                                "apiVersions": [
-                                    "2018-07-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "customApis",
-                                "apiVersions": [
-                                    "2018-07-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations",
-                                "apiVersions": [
-                                    "2018-07-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/listWsdlInterfaces",
-                                "apiVersions": [
-                                    "2018-03-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/extractApiDefinitionFromWsdl",
-                                "apiVersions": [
-                                    "2018-03-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/managedApis",
-                                "apiVersions": [
-                                    "2018-07-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/runtimes",
-                                "apiVersions": [
-                                    "2018-03-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/apiOperations",
-                                "apiVersions": [
-                                    "2018-07-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "connectionGateways",
-                                "apiVersions": [
-                                    "2018-03-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "locations/connectionGatewayInstallations",
-                                "apiVersions": [
-                                    "2018-03-01-preview"
-                                ]
-                            },
-                            {
-                                "resourceType": "checkNameAvailability",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "billingMeters",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            },
-                            {
-                                "resourceType": "verifyHostingEnvironmentVnet",
-                                "apiVersions": [
-                                    "2018-11-01"
-                                ]
-                            }
-                        ],
-                        "registrationState": "Registered"
-                    }
-                }
-            }
-        },
-        {
-            "request": {
-                "method": "PATCH",
-                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan?api-version=2018-11-01",
-                "body": "mock_body",
-                "headers": {}
-            },
-            "response": {
-                "status": {
-                    "code": 200,
-                    "message": "OK"
-                },
-                "headers": {
-                    "x-ms-ratelimit-remaining-subscription-writes": [
-                        "1199"
-                    ],
                     "date": [
-                        "Tue, 13 Aug 2019 00:37:39 GMT"
-                    ],
-                    "cache-control": [
-                        "no-cache"
-                    ],
-                    "content-type": [
-                        "application/json"
+                        "Wed, 14 Aug 2019 17:59:47 GMT"
                     ],
                     "content-length": [
-                        "1407"
+                        "1391"
                     ]
                 },
                 "body": {
                     "data": {
-                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan",
-                        "name": "cctest-appserviceplan",
+                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan-win",
+                        "name": "cctest-appserviceplan-win",
                         "type": "Microsoft.Web/serverfarms",
                         "kind": "app",
+                        "location": "East US",
                         "tags": {
                             "sku": "B1"
                         },
                         "properties": {
-                            "serverFarmId": 11420,
-                            "name": "cctest-appserviceplan",
-                            "sku": {
-                                "name": "S1",
-                                "tier": "Standard",
-                                "size": "S1",
-                                "capacity": 1
-                            },
+                            "serverFarmId": 24576,
+                            "name": "cctest-appserviceplan-win",
                             "workerSize": "Default",
                             "workerSizeId": 0,
                             "workerTierName": null,
@@ -453,7 +48,7 @@
                             "currentWorkerSizeId": 0,
                             "currentNumberOfWorkers": 1,
                             "status": "Ready",
-                            "webSpace": "test_appserviceplan-CentralUSwebspace",
+                            "webSpace": "test_appserviceplan-EastUSwebspace",
                             "subscription": "ea42f556-5106-4743-99b0-c129bfa71a47",
                             "adminSiteName": null,
                             "hostingEnvironment": null,
@@ -463,7 +58,7 @@
                             "adminRuntimeSiteName": null,
                             "computeMode": "Dedicated",
                             "siteMode": null,
-                            "geoRegion": "Central US",
+                            "geoRegion": "East US",
                             "perSiteScaling": false,
                             "maximumElasticWorkerCount": 1,
                             "numberOfSites": 0,
@@ -479,10 +74,10 @@
                             "reserved": false,
                             "isXenon": false,
                             "hyperV": false,
-                            "mdmId": "waws-prod-dm1-149_11420",
+                            "mdmId": "waws-prod-blu-119_24576",
                             "targetWorkerCount": 0,
                             "targetWorkerSizeId": 0,
-                            "provisioningState": null,
+                            "provisioningState": "Succeeded",
                             "webSiteId": null,
                             "existingServerFarmIds": null
                         },
@@ -490,9 +85,44 @@
                             "name": "S1",
                             "tier": "Standard",
                             "size": "S1",
+                            "family": "S",
                             "capacity": 1
                         }
                     }
+                }
+            }
+        },
+        {
+            "request": {
+                "method": "PATCH",
+                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan-win?api-version=2016-09-01",
+                "body": "mock_body",
+                "headers": {}
+            },
+            "response": {
+                "status": {
+                    "code": 202,
+                    "message": "Accepted"
+                },
+                "headers": {
+                    "x-ms-ratelimit-remaining-subscription-writes": [
+                        "1199"
+                    ],
+                    "content-length": [
+                        "0"
+                    ],
+                    "location": [
+                        "https://management.azure.com/subscriptions/aa98974b-5d2a-4d98-a78a-382f3715d07e/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverFarms/cctest-appserviceplan-win/operationresults/f946c0e0-094b-42b2-8f0c-27fef81c8b2c?api-version=2016-09-01"
+                    ],
+                    "cache-control": [
+                        "no-cache"
+                    ],
+                    "date": [
+                        "Wed, 14 Aug 2019 17:59:49 GMT"
+                    ]
+                },
+                "body": {
+                    "string": ""
                 }
             }
         },
@@ -509,34 +139,34 @@
                     "message": "OK"
                 },
                 "headers": {
-                    "date": [
-                        "Tue, 13 Aug 2019 00:39:20 GMT"
+                    "content-type": [
+                        "application/json"
                     ],
                     "cache-control": [
                         "no-cache"
                     ],
-                    "content-type": [
-                        "application/json"
+                    "date": [
+                        "Wed, 14 Aug 2019 17:59:48 GMT"
                     ],
                     "content-length": [
-                        "6513"
+                        "8072"
                     ]
                 },
                 "body": {
                     "data": {
                         "value": [
                             {
-                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan",
-                                "name": "cctest-appserviceplan",
+                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan-win",
+                                "name": "cctest-appserviceplan-win",
                                 "type": "Microsoft.Web/serverfarms",
                                 "kind": "app",
-                                "location": "Central US",
+                                "location": "East US",
                                 "tags": {
                                     "sku": "B1"
                                 },
                                 "properties": {
-                                    "serverFarmId": 13753717,
-                                    "name": "cctest-appserviceplan",
+                                    "serverFarmId": 13780111,
+                                    "name": "cctest-appserviceplan-win",
                                     "workerSize": "Default",
                                     "workerSizeId": 0,
                                     "workerTierName": null,
@@ -545,7 +175,7 @@
                                     "currentWorkerSizeId": null,
                                     "currentNumberOfWorkers": null,
                                     "status": "Ready",
-                                    "webSpace": "test_appserviceplan-CentralUSwebspace",
+                                    "webSpace": "test_appserviceplan-EastUSwebspace",
                                     "subscription": null,
                                     "adminSiteName": null,
                                     "hostingEnvironment": null,
@@ -555,7 +185,7 @@
                                     "adminRuntimeSiteName": null,
                                     "computeMode": "Shared",
                                     "siteMode": null,
-                                    "geoRegion": "Central US",
+                                    "geoRegion": "East US",
                                     "perSiteScaling": null,
                                     "maximumElasticWorkerCount": null,
                                     "numberOfSites": 0,
@@ -596,7 +226,7 @@
         {
             "request": {
                 "method": "PATCH",
-                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan?api-version=2018-02-01",
+                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan-win?api-version=2018-02-01",
                 "body": "mock_body",
                 "headers": {}
             },
@@ -609,32 +239,32 @@
                     "x-ms-ratelimit-remaining-subscription-writes": [
                         "1199"
                     ],
-                    "date": [
-                        "Tue, 13 Aug 2019 00:39:23 GMT"
+                    "content-type": [
+                        "application/json"
                     ],
                     "cache-control": [
                         "no-cache"
                     ],
-                    "content-type": [
-                        "application/json"
+                    "date": [
+                        "Wed, 14 Aug 2019 18:00:46 GMT"
                     ],
                     "content-length": [
-                        "1424"
+                        "1427"
                     ]
                 },
                 "body": {
                     "data": {
-                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan",
-                        "name": "cctest-appserviceplan",
+                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan-win",
+                        "name": "cctest-appserviceplan-win",
                         "type": "Microsoft.Web/serverfarms",
                         "kind": "app",
-                        "location": "Central US",
+                        "location": "East US",
                         "tags": {
                             "sku": "B1"
                         },
                         "properties": {
-                            "serverFarmId": 11420,
-                            "name": "cctest-appserviceplan",
+                            "serverFarmId": 24576,
+                            "name": "cctest-appserviceplan-win",
                             "sku": {
                                 "name": "B1",
                                 "tier": "Basic",
@@ -649,7 +279,7 @@
                             "currentWorkerSizeId": 0,
                             "currentNumberOfWorkers": 1,
                             "status": "Ready",
-                            "webSpace": "test_appserviceplan-CentralUSwebspace",
+                            "webSpace": "test_appserviceplan-EastUSwebspace",
                             "subscription": "ea42f556-5106-4743-99b0-c129bfa71a47",
                             "adminSiteName": null,
                             "hostingEnvironment": null,
@@ -659,7 +289,7 @@
                             "adminRuntimeSiteName": null,
                             "computeMode": "Dedicated",
                             "siteMode": null,
-                            "geoRegion": "Central US",
+                            "geoRegion": "East US",
                             "perSiteScaling": false,
                             "maximumElasticWorkerCount": 1,
                             "numberOfSites": 0,
@@ -675,7 +305,7 @@
                             "reserved": false,
                             "isXenon": false,
                             "hyperV": false,
-                            "mdmId": "waws-prod-dm1-149_11420",
+                            "mdmId": "waws-prod-blu-119_24576",
                             "targetWorkerCount": 0,
                             "targetWorkerSizeId": 0,
                             "provisioningState": null,
@@ -686,6 +316,97 @@
                             "name": "B1",
                             "tier": "Basic",
                             "size": "B1",
+                            "capacity": 1
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "request": {
+                "method": "GET",
+                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan-win?api-version=2018-02-01",
+                "body": null,
+                "headers": {}
+            },
+            "response": {
+                "status": {
+                    "code": 200,
+                    "message": "OK"
+                },
+                "headers": {
+                    "content-type": [
+                        "application/json"
+                    ],
+                    "cache-control": [
+                        "no-cache"
+                    ],
+                    "date": [
+                        "Wed, 14 Aug 2019 18:00:48 GMT"
+                    ],
+                    "content-length": [
+                        "1387"
+                    ]
+                },
+                "body": {
+                    "data": {
+                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/test_appserviceplan/providers/Microsoft.Web/serverfarms/cctest-appserviceplan-win",
+                        "name": "cctest-appserviceplan-win",
+                        "type": "Microsoft.Web/serverfarms",
+                        "kind": "app",
+                        "location": "East US",
+                        "tags": {
+                            "sku": "B1"
+                        },
+                        "properties": {
+                            "serverFarmId": 24576,
+                            "name": "cctest-appserviceplan-win",
+                            "workerSize": "Default",
+                            "workerSizeId": 0,
+                            "workerTierName": null,
+                            "numberOfWorkers": 1,
+                            "currentWorkerSize": "Default",
+                            "currentWorkerSizeId": 0,
+                            "currentNumberOfWorkers": 1,
+                            "status": "Ready",
+                            "webSpace": "test_appserviceplan-EastUSwebspace",
+                            "subscription": "ea42f556-5106-4743-99b0-c129bfa71a47",
+                            "adminSiteName": null,
+                            "hostingEnvironment": null,
+                            "hostingEnvironmentProfile": null,
+                            "maximumNumberOfWorkers": 3,
+                            "planName": "VirtualDedicatedPlan",
+                            "adminRuntimeSiteName": null,
+                            "computeMode": "Dedicated",
+                            "siteMode": null,
+                            "geoRegion": "East US",
+                            "perSiteScaling": false,
+                            "maximumElasticWorkerCount": 1,
+                            "numberOfSites": 0,
+                            "hostingEnvironmentId": null,
+                            "isSpot": false,
+                            "spotExpirationTime": null,
+                            "freeOfferExpirationTime": null,
+                            "tags": {
+                                "sku": "B1"
+                            },
+                            "kind": "app",
+                            "resourceGroup": "test_appserviceplan",
+                            "reserved": false,
+                            "isXenon": false,
+                            "hyperV": false,
+                            "mdmId": "waws-prod-blu-119_24576",
+                            "targetWorkerCount": 0,
+                            "targetWorkerSizeId": 0,
+                            "provisioningState": "Succeeded",
+                            "webSiteId": null,
+                            "existingServerFarmIds": null
+                        },
+                        "sku": {
+                            "name": "B1",
+                            "tier": "Basic",
+                            "size": "B1",
+                            "family": "B",
                             "capacity": 1
                         }
                     }

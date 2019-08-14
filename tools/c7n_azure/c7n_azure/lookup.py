@@ -38,6 +38,15 @@ class Lookup(object):
     }
 
     @staticmethod
+    def lookup_type(schema):
+        return {
+            'oneOf': [
+                Lookup.schema,
+                schema
+            ]
+        }
+
+    @staticmethod
     def extract(source, data=None):
         if Lookup.is_lookup(source):
             return Lookup.get_value(source, data)

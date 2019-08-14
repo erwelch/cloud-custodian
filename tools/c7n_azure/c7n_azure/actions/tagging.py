@@ -56,18 +56,8 @@ class Tag(AzureBaseAction):
     schema = utils.type_schema(
         'tag',
         **{
-            'value': {
-                'oneOf': [
-                    {'type': 'string'},
-                    Lookup.schema
-                ]
-            },
-            'tag': {
-                'oneOf': [
-                    {'type': 'string'},
-                    Lookup.schema
-                ]
-            },
+            'value': Lookup.lookup_type({'type': 'string'}),
+            'tag': {'type': 'string'},
             'tags': {'type': 'object'}
         }
     )
