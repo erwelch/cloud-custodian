@@ -48,7 +48,7 @@ class TagsTest(BaseTest):
         resource = tools.get_resource(self.existing_tags)
 
         TagHelper.add_tags(None, resource,
-                           {'tag_from_resource': {'source': 'resource', 'key': 'name'}})
+                           {'tag_from_resource': {'resource': 'name'}})
         expected_tags = self.existing_tags.copy()
         expected_tags.update({'tag_from_resource': resource['name']})
         self.assertEqual(tools.get_tags_parameter(update_resource_tags), expected_tags)
@@ -58,8 +58,7 @@ class TagsTest(BaseTest):
         resource = tools.get_resource(self.existing_tags)
 
         TagHelper.add_tags(None, resource, {'tag_from_resource_default':
-                                            {'source': 'resource',
-                                             'key': 'does_not_exist',
+                                            {'resource': 'does_not_exist',
                                              'default-value': 'value4'}})
         expected_tags = self.existing_tags.copy()
         expected_tags.update({'tag_from_resource_default': 'value4'})

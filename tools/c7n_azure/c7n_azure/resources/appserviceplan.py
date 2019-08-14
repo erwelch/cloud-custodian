@@ -28,7 +28,9 @@ class AppServicePlan(ArmResourceManager):
     :example:
 
     Find all App Service Plans that are of the Basic sku tier.
+
     .. code-block:: yaml
+
         policies:
           - name: basic-tier-plans
             resource: azure.appserviceplan
