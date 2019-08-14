@@ -93,8 +93,7 @@ class ResizePlan(AzureBaseAction):
             actions:
               - type: resize-plan
                 size:
-                    source: resource
-                    key: tags.on_hour_sku
+                    resource: tags.on_hour_sku
                     default-value: P1
 
           - name: off-hours
@@ -108,8 +107,7 @@ class ResizePlan(AzureBaseAction):
               - type: tag
                 tag: on_hour_sku
                 value:
-                    source: resource
-                    key: sku.name
+                    resource: sku.name
               - type: resize-plan
                 size:
                     size: S1
