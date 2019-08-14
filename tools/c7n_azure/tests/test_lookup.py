@@ -49,7 +49,7 @@ class TagsTest(BaseTest):
             'default-value': 'value_2'
         }
 
-        value = Lookup.extract(source, resource)
+        value = Lookup.get_value_from_resource(source, resource)
         self.assertEqual(value, 'value_1')
 
     def test_get_value_from_resource_value_not_exists(self):
@@ -63,7 +63,7 @@ class TagsTest(BaseTest):
             'default-value': 'value_2'
         }
 
-        value = Lookup.extract(source, resource)
+        value = Lookup.get_value_from_resource(source, resource)
         self.assertEqual(value, 'value_2')
 
     def test_get_value_from_resource_value_not_exists_exception(self):
