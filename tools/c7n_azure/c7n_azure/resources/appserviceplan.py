@@ -27,12 +27,10 @@ class AppServicePlan(ArmResourceManager):
 
     :example:
 
-    Resize app service plans with on/off hours and resource tagging
-
+    Find all App Service Plans that are of the Basic sku tier.
     .. code-block:: yaml
-
         policies:
-          - name: on-off-hours-resize-sku
+          - name: basic-tier-plans
             resource: azure.appserviceplan
             filters:
               - type: value
@@ -40,36 +38,6 @@ class AppServicePlan(ArmResourceManager):
                 op: eq
                 value: Basic
 
-          - name: on-hours
-            resource: azure.appserviceplan
-            filters:
-              - type: onhour
-                default_tz: pt
-                onhour: 8
-                tag: onoffhour_schedule
-            actions:
-              - type: resize-plan
-                size:
-                    source: resource
-                    key: tags.on_hour_sku
-                    default-value: P1
-
-          - name: off-hours
-            resource: azure.appserviceplan
-            filters:
-              - type: offhour
-                default_tz: pt
-                offhour: 19
-                tag: onoffhour_schedule
-            actions:
-              - type: tag
-                tag: on_hour_sku
-                value:
-                    source: resource
-                    key: sku.name
-              - type: resize-plan
-                size:
-                    size: S1
     """
 
     class resource_type(ArmResourceManager.resource_type):
@@ -104,6 +72,46 @@ class ResizePlan(AzureBaseAction):
            - type: resize-plan
              size: F1
              count: 1
+
+
+    :example:
+
+    Resize app service plans with on/off hours and resource tagging
+
+    .. code-block:: yaml
+
+        policies:
+          - name: on-hours
+            resource: azure.appserviceplan
+            filters:
+              - type: onhour
+                default_tz: pt
+                onhour: 8
+                tag: onoffhour_schedule
+            actions:
+              - type: resize-plan
+                size:
+                    source: resource
+                    key: tags.on_hour_sku
+                    default-value: P1
+
+          - name: off-hours
+            resource: azure.appserviceplan
+            filters:
+              - type: offhour
+                default_tz: pt
+                offhour: 19
+                tag: onoffhour_schedule
+            actions:
+              - type: tag
+                tag: on_hour_sku
+                value:
+                    source: resource
+                    key: sku.name
+              - type: resize-plan
+                size:
+                    size: S1
+
     """
 
     schema = utils.type_schema(
