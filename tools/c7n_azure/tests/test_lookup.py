@@ -17,25 +17,12 @@ class TagsTest(BaseTest):
             }
         }
         source = {
-            'source': Lookup.RESOURCE_SOURCE,
-            'key': 'field_level_1.field_level_2',
+            Lookup.RESOURCE_SOURCE: 'field_level_1.field_level_2',
             'default-value': 'value_2'
         }
 
         value = Lookup.extract(source, data)
         self.assertEqual(value, 'value_1')
-
-    def test_is_lookup_string(self):
-        self.assertFalse(Lookup.is_lookup('string'))
-
-    def test_is_lookup_boolean(self):
-        self.assertFalse(Lookup.is_lookup(True))
-
-    def test_is_lookup_number(self):
-        self.assertFalse(Lookup.is_lookup(1))
-
-    def test_is_lookup_dict(self):
-        self.assertFalse(Lookup.is_lookup({'mock_key': 'mock_value'}))
 
     def test_get_value_from_resource_value_exists(self):
         resource = {
@@ -44,8 +31,7 @@ class TagsTest(BaseTest):
             }
         }
         source = {
-            'source': Lookup.RESOURCE_SOURCE,
-            'key': 'field_level_1.field_level_2',
+            Lookup.RESOURCE_SOURCE: 'field_level_1.field_level_2',
             'default-value': 'value_2'
         }
 
@@ -59,8 +45,7 @@ class TagsTest(BaseTest):
             }
         }
         source = {
-            'source': Lookup.RESOURCE_SOURCE,
-            'key': 'field_level_1.field_level_2',
+            Lookup.RESOURCE_SOURCE: 'field_level_1.field_level_2',
             'default-value': 'value_2'
         }
 
@@ -74,8 +59,7 @@ class TagsTest(BaseTest):
             }
         }
         source = {
-            'source': Lookup.RESOURCE_SOURCE,
-            'key': 'field_level_1.field_level_2'
+            Lookup.RESOURCE_SOURCE: 'field_level_1.field_level_2'
         }
 
         with self.assertRaises(Exception):

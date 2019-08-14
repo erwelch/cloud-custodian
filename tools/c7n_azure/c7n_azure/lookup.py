@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import jmespath
-from jsonschema import validate, exceptions
 
 
 class Lookup(object):
@@ -22,43 +21,41 @@ class Lookup(object):
     schema = {
         'type': 'object',
         'properties': {
-            'source': {'type': 'string', 'enum': ['resource']},
-            'key': {'type': 'string'},
+            'oneOf': [
+                {RESOURCE_SOURCE: {'type': 'string'}}
+            ],
             'default-value': {'oneOf': [
                 {'type': 'string'},
                 {'type': 'number'},
                 {'type': 'boolean'}
             ]}
         },
-        'required': ['source', 'key']
+        'oneOf': [
+            {
+                'required': [RESOURCE_SOURCE]
+            }
+        ]
     }
 
     @staticmethod
     def extract(source, data=None):
-        if not Lookup.is_lookup(source):
-            return source
-        else:
+        if Lookup.is_lookup(source):
             return Lookup.get_value(source, data)
+        else:
+            return source
 
     @staticmethod
     def is_lookup(source):
-        if type(source) is not dict:
-            return False
-
-        try:
-            validate(instance=source, schema=Lookup.schema)
-            return True
-        except exceptions.ValidationError:
-            return False
+        return type(source) is dict and Lookup.RESOURCE_SOURCE in source
 
     @staticmethod
     def get_value(source, data=None):
-        if source['source'] == Lookup.RESOURCE_SOURCE:
+        if Lookup.RESOURCE_SOURCE in source:
             return Lookup.get_value_from_resource(source, data)
 
     @staticmethod
     def get_value_from_resource(source, resource):
-        value = jmespath.search(source['key'], resource)
+        value = jmespath.search(source[Lookup.RESOURCE_SOURCE], resource)
 
         if value is not None:
             return value

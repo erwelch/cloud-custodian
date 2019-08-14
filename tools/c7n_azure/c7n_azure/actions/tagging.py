@@ -62,7 +62,12 @@ class Tag(AzureBaseAction):
                     Lookup.schema
                 ]
             },
-            'tag': {'type': 'string'},
+            'tag': {
+                'oneOf': [
+                    {'type': 'string'},
+                    Lookup.schema
+                ]
+            },
             'tags': {'type': 'object'}
         }
     )

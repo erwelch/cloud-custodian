@@ -136,7 +136,7 @@ class ResizePlan(AzureBaseAction):
             model.sku.name = size
 
         if 'count' in self.data:
-            model.target_worker_count = int(Lookup.extract(self.data.get('count'), resource))
+            model.target_worker_count = Lookup.extract(self.data.get('count'), resource)
 
         try:
             self.client.app_service_plans.update(resource['resourceGroup'], resource['name'], model)
