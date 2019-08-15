@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import jmespath
+import copy
 
 
 class Lookup(object):
@@ -33,12 +34,13 @@ class Lookup(object):
 
     @staticmethod
     def lookup_type(schema):
-        for lookup_schema in Lookup.schema['oneOf']:
-            lookup_schema['properties']['default-value'] = schema
+        lookup_schema = copy.deepcopy(Lookup.schema)
+        for lookup in Lookup.schema['oneOf']:
+            lookup['properties']['default-value'] = schema
 
         return {
             'oneOf': [
-                Lookup.schema,
+                lookup_schema,
                 schema
             ]
         }
