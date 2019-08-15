@@ -35,7 +35,7 @@ class Lookup(object):
     @staticmethod
     def lookup_type(schema):
         lookup_schema = copy.deepcopy(Lookup.schema)
-        for lookup in Lookup.schema['oneOf']:
+        for lookup in lookup_schema['oneOf']:
             lookup['properties']['default-value'] = schema
 
         return {

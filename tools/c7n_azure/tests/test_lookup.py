@@ -20,11 +20,21 @@ from c7n_azure.lookup import Lookup
 class TagsTest(BaseTest):
 
     def test_lookup_type(self):
-        type_schema = {'type': 'number'}
-        lookup_schema = Lookup.lookup_type(type_schema)
-        self.assertEqual(type_schema,
-                         lookup_schema['oneOf'][0]['oneOf'][0]['properties']['default-value'])
-        self.assertEqual(type_schema, lookup_schema['oneOf'][1])
+        number_schema = {'type': 'number'}
+        lookup_default_number = Lookup.lookup_type(number_schema)
+
+        string_schema = {'type': 'string'}
+        lookup_default_string = Lookup.lookup_type(string_schema)
+
+        self.assertEqual(number_schema, lookup_default_number['oneOf'][1])
+        self.assertEqual(number_schema,
+                         lookup_default_number['oneOf'][0]['oneOf'][0]
+                         ['properties']['default-value'])
+
+        self.assertEqual(string_schema, lookup_default_string['oneOf'][1])
+        self.assertEqual(string_schema,
+                         lookup_default_string['oneOf'][0]['oneOf'][0]
+                         ['properties']['default-value'])
 
     def test_extract_no_lookup(self):
         source = 'mock_string_value'
