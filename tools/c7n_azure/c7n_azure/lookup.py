@@ -20,19 +20,18 @@ class Lookup(object):
 
     schema = {
         'type': 'object',
-        'properties': {
-            'oneOf': [
-                {RESOURCE_SOURCE: {'type': 'string'}}
-            ],
-            'default-value': {'oneOf': [
-                {'type': 'string'},
-                {'type': 'number'},
-                {'type': 'boolean'}
-            ]}
-        },
         'oneOf': [
             {
-                'required': [RESOURCE_SOURCE]
+                'properties': {
+                    RESOURCE_SOURCE: {'type': 'string'},
+                    'default-value': {'oneOf': [
+                        {'type': 'string'},
+                        {'type': 'number'},
+                        {'type': 'boolean'}
+                    ]}
+                },
+                'required': [RESOURCE_SOURCE],
+                'additionalProperties': False
             }
         ]
     }
