@@ -14,7 +14,6 @@
 import logging
 
 from azure.mgmt.resource.resources.models import GenericResource, ResourceGroupPatchable
-from c7n_azure.lookup import Lookup
 
 
 class TagHelper:
