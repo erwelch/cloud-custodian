@@ -24,11 +24,6 @@ class Lookup(object):
             {
                 'properties': {
                     RESOURCE_SOURCE: {'type': 'string'},
-                    'default-value': {'oneOf': [
-                        {'type': 'string'},
-                        {'type': 'number'},
-                        {'type': 'boolean'}
-                    ]}
                 },
                 'required': [RESOURCE_SOURCE],
                 'additionalProperties': False
@@ -38,6 +33,9 @@ class Lookup(object):
 
     @staticmethod
     def lookup_type(schema):
+        for lookup_schema in Lookup.schema['oneOf']:
+            lookup_schema['properties']['default-value'] = schema
+
         return {
             'oneOf': [
                 Lookup.schema,

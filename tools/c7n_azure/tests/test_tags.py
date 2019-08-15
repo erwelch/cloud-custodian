@@ -24,37 +24,6 @@ class TagsTest(BaseTest):
 
     existing_tags = {'tag1': 'value1', 'tag2': 'value2'}
 
-    def test_tag_schema_validate(self):
-        with self.sign_out_patch():
-            p = self.load_policy({
-                'name': 'test-tag-schema-validate',
-                'resource': 'azure.vm',
-                'actions': [
-                    {'type': 'tag',
-                     'tag': 'mock_tag',
-                     'value': 'mock_value'
-                     }
-                ]
-            }, validate=True)
-            self.assertTrue(p)
-
-    def test_lookup_tag_schema_validate(self):
-        with self.sign_out_patch():
-            p = self.load_policy({
-                'name': 'test-tag-schema-validate',
-                'resource': 'azure.vm',
-                'actions': [
-                    {'type': 'tag',
-                     'tag': {
-                         'resource': 'name'
-                     },
-                     'value': {
-                         'resource': 'name'
-                     }},
-                ]
-            }, validate=True)
-            self.assertTrue(p)
-
     def test_get_tag_value(self):
         resource = tools.get_resource(self.existing_tags)
 

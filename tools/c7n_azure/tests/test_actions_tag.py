@@ -46,6 +46,20 @@ class ActionsTagTest(BaseTest):
                 ]),
                 validate=True))
 
+        self.assertTrue(self.load_policy({
+            'name': 'test-tag-schema-validate',
+            'resource': 'azure.vm',
+            'actions': [
+                {'type': 'tag',
+                 'tag': {
+                     'resource': 'name'
+                 },
+                 'value': {
+                     'resource': 'name'
+                 }},
+            ]
+        }, validate=True))
+
         with self.assertRaises(FilterValidationError):
             # Can't have both tags and tag/value
             self.load_policy(tools.get_policy([
