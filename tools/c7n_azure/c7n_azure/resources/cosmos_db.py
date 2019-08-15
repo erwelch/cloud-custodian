@@ -12,23 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
-from concurrent.futures import as_completed
 from itertools import groupby
 
 import azure.mgmt.cosmosdb
 from azure.cosmos.cosmos_client import CosmosClient
 from azure.cosmos.errors import HTTPFailure
-from netaddr import IPSet
-
-from c7n.filters import ValueFilter
-from c7n.utils import type_schema
 from c7n_azure import constants
 from c7n_azure.actions.base import AzureBaseAction
+from c7n_azure.actions.tagging import TagParentAction
 from c7n_azure.filters import FirewallRulesFilter
 from c7n_azure.provider import resources
 from c7n_azure.query import ChildResourceManager, ChildTypeInfo
 from c7n_azure.resources.arm import ArmResourceManager
 from c7n_azure.utils import ResourceIdParser
+from c7n_azure.lookup import Lookup
+from concurrent.futures import as_completed
+from netaddr import IPSet
+
+from c7n.filters import ValueFilter
+from c7n.utils import type_schema, get_annotation_prefix
 
 try:
     from functools import lru_cache
@@ -87,6 +89,8 @@ class CosmosDBChildResource(ChildResourceManager):
         parent_manager_name = 'cosmosdb'
         raise_on_exception = False
         annotate_parent = True
+
+
 
     @staticmethod
     @lru_cache()
@@ -163,6 +167,9 @@ class CosmosDBCollection(CosmosDBChildResource):
 
     """
 
+    def tag_operation_enabled(self, resource_type):
+        return True
+
     def enumerate_resources(self, parent_resource, type_info, **params):
         data_client = self.get_data_client(parent_resource)
 
@@ -182,9 +189,13 @@ class CosmosDBCollection(CosmosDBChildResource):
             for c in container_result:
                 c.update({'c7n:document-endpoint':
                          parent_resource.get('properties').get('documentEndpoint')})
+                c[get_annotation_prefix('parent')] = parent_resource
                 collections.append(c)
 
         return collections
+
+
+CosmosDBCollection.action_registry.register('tag-parent', TagParentAction)
 
 
 class OfferHelper(object):
@@ -347,7 +358,7 @@ class CosmosDBReplaceOfferAction(AzureBaseAction):
         'replace-offer',
         required=['throughput'],
         **{
-            'throughput': {'type': 'number'}
+            'throughput': Lookup.lookup_type({'type': 'number'})
         }
     )
 
@@ -371,9 +382,9 @@ class CosmosDBReplaceOfferAction(AzureBaseAction):
             offer = resources[0]['c7n:offer'][0]
             new_offer = dict(offer)
             new_offer.pop('c7n:MatchedFilters', None)
-            new_offer['content']['offerThroughput'] = self.data['throughput']
             new_offer = data_client.ReplaceOffer(offer['_self'], new_offer)
             for resource in resources:
+                new_offer['content']['offerThroughput'] = Lookup.extract(self.data['throughput'], resource)
                 resource['c7n:offer'] = [new_offer]
 
         except Exception as e:
@@ -406,3 +417,36 @@ class CosmosDBFirewallRulesFilter(FirewallRulesFilter):
         resource_rules = IPSet(ip_range_string.split(','))
 
         return resource_rules
+
+class TagParentAction(Tag):
+    """Tag Parent Action
+
+    Tags the resource's parent (e.g. CosmosDB collection tags CosmosDB Account)
+
+    :example:
+
+    This policy will tag the parent Cosmos DB account with the throughput of the collection
+
+    .. code-block:: yaml
+
+        policies:
+          - name: limit-throughput-to-400
+            resource: azure.cosmosdb-collection
+            actions:
+              - type: tag-parent
+                tag:
+                    resource: join(`` ,[id, `_sku`])
+                value:
+                    resource: c7n:offer.throughput
+
+    """
+    #
+    # schema = type_schema('tag-parent', rinherit=Tag.schema)
+    #
+    # def _process_resource(self, resource):
+    #     parent_key = utils.get_annotation_prefix('parent')
+    #     if parent_key not in resource:
+    #         return
+    #
+    #     new_tags = self._get_tags(resource)
+    #     TagHelper.add_tags(self, resource[parent_key], new_tags)
