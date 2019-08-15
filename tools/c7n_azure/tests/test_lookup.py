@@ -14,7 +14,7 @@
 
 from azure_common import BaseTest
 
-from c7n_azure.tags import Lookup
+from c7n_azure.lookup import Lookup
 
 
 class TagsTest(BaseTest):
