@@ -417,36 +417,3 @@ class CosmosDBFirewallRulesFilter(FirewallRulesFilter):
         resource_rules = IPSet(ip_range_string.split(','))
 
         return resource_rules
-
-class TagParentAction(Tag):
-    """Tag Parent Action
-
-    Tags the resource's parent (e.g. CosmosDB collection tags CosmosDB Account)
-
-    :example:
-
-    This policy will tag the parent Cosmos DB account with the throughput of the collection
-
-    .. code-block:: yaml
-
-        policies:
-          - name: limit-throughput-to-400
-            resource: azure.cosmosdb-collection
-            actions:
-              - type: tag-parent
-                tag:
-                    resource: join(`` ,[id, `_sku`])
-                value:
-                    resource: c7n:offer.throughput
-
-    """
-    #
-    # schema = type_schema('tag-parent', rinherit=Tag.schema)
-    #
-    # def _process_resource(self, resource):
-    #     parent_key = utils.get_annotation_prefix('parent')
-    #     if parent_key not in resource:
-    #         return
-    #
-    #     new_tags = self._get_tags(resource)
-    #     TagHelper.add_tags(self, resource[parent_key], new_tags)
