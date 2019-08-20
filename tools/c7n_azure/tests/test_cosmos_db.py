@@ -237,7 +237,7 @@ class CosmosDBThroughputActionsTest(BaseTest):
         self._assert_offer_throughput_equals(500, collections[0]['_self'])
         self.offer = collections[0]['c7n:offer']
 
-    def test_restore_throughput_state_collection_updates_throughput_from_tag(self):
+    def test_restore_throughput_state_updates_throughput_from_tag(self):
 
         p1 = self.load_policy({
             'name': 'test-azure-cosmosdb',

@@ -227,7 +227,7 @@ class CosmosDBOfferFilter(ValueFilter):
     .. code-block:: yaml
 
         policies:
-          - name: cosmosdb-high-throughput
+          - name: cosmosdb-collection-high-throughput
             resource: azure.cosmosdb-collection
             filters:
               - type: offer
