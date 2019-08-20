@@ -408,7 +408,7 @@ class CosmosDBStoreStateAction(AzureBaseAction):
     .. code-block:: yaml
 
         policies:
-          - name: restore-on-hours-throughput-state
+          - name: store-on-hours-state
             resource: azure.cosmosdb-collection
             filters:
               - type: offer
