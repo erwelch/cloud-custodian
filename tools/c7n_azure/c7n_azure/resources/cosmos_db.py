@@ -312,25 +312,53 @@ class CosmosDBReplaceOfferAction(AzureBaseAction):
             readonly=False
         )
 
-    def _process_account_set(self, resources, data_client):
+    def _process_account_set(self, resources, account_client):
         try:
             throughput = self.data.get('throughput')
             for resource in resources:
-                self._process_resource(resource, data_client, throughput)
+                self._process_resource(resource, account_client, throughput)
 
         except Exception as e:
             log.warn(e)
 
         return resources
 
-    def _process_resource(self, resource, data_client, throughput):
+    def _process_resource(self, resource, account_client, throughput):
         offer = resource['c7n:offer']
-        offer['content']['offerThroughput'] = throughput
-        data_client.ReplaceOffer(offer['_self'], offer)
+        new_offer = dict(offer)
+        new_offer.pop('c7n:MatchedFilters', None)
+        new_offer['content']['offerThroughput'] = throughput
+        account_client.ReplaceOffer(offer['_self'], new_offer)
 
 
 @CosmosDBCollection.action_registry.register('restore-throughput-state')
 class CosmosDBRestoreStateAction(CosmosDBReplaceOfferAction):
+    """CosmosDB Restore State Action
+
+    Restores the throughput of a cosmodb collection's offer from state
+    stored in a tag on the collections's parent CosmosDB account.
+
+    :example:
+
+    This policy will restore the state of Cosmos DB collections by retrieving the state from
+    the tag 'on-hour-state' from its associated Cosmos DB account.
+
+    .. code-block:: yaml
+
+        policies:
+          - name: restore-on-hours-throughput-state
+            resource: azure.cosmosdb-collection
+            filters:
+              - type: onhour
+                default_tz: pt
+                onhour: 8
+                tag: onoffhour_schedule
+            actions:
+              - type: restore-throughput-state
+                state-tag: on-hour-state
+
+    """
+
     schema = type_schema(
         'restore-throughput-state',
         required=['state-tag'],
@@ -339,9 +367,12 @@ class CosmosDBRestoreStateAction(CosmosDBReplaceOfferAction):
         }
     )
 
-    def _process_account_set(self, resources, data_client):
+    def _process_account_set(self, resources, account_client):
         try:
-            container_states_tag_value = TagHelper.get_tag_value(resources[0]['c7n:parent'], self.data.get('state-tag'))
+            parent_account = resources[0]['c7n:parent']
+            tag_name = self.data.get('state-tag')
+            container_states_tag_value = TagHelper.get_tag_value(
+                parent_account, tag_name)
 
             if container_states_tag_value:
                 for state in container_states_tag_value.split(';'):
@@ -352,9 +383,11 @@ class CosmosDBRestoreStateAction(CosmosDBReplaceOfferAction):
                     container = next((c for c in resources if c['_rid'] == container_rid), None)
 
                     if container:
-                        self._process_resource(container, data_client, container_throughput)
+                        self._process_resource(container, account_client, container_throughput)
             else:
-                self.log.warning('No tag {} on parent resource.'.format(self.data.get('state-tag')))
+                self.log.warning('No tag {} on parent resource, {}.'.format(
+                    tag_name, parent_account))
+
         except Exception as e:
             log.warn(e)
 
@@ -363,6 +396,31 @@ class CosmosDBRestoreStateAction(CosmosDBReplaceOfferAction):
 
 @CosmosDBCollection.action_registry.register('store-throughput-state')
 class CosmosDBStoreStateAction(AzureBaseAction):
+    """CosmosDB Store State Action
+
+    Stores the throughput of collections in a tag on the parent Cosmos DB account.
+
+    :example:
+
+    This policy stores the throughput of collections with throughput over 400 in
+    a tag called 'on-hour-state' on the parent Cosmos DB account.
+
+    .. code-block:: yaml
+
+        policies:
+          - name: restore-on-hours-throughput-state
+            resource: azure.cosmosdb-collection
+            filters:
+              - type: offer
+                key: content.offerThroughput
+                op: gt
+                value: 400
+            actions:
+              - type: restore-throughput-state
+                state-tag: on-hour-state
+
+    """
+
     schema = type_schema(
         'store-throughput-state',
         required=['state-tag'],
@@ -370,6 +428,8 @@ class CosmosDBStoreStateAction(AzureBaseAction):
             'state-tag': {'type': 'string'}
         }
     )
+
+    TAG_VALUE_CHAR_LIMIT = 256
 
     def _process_resources(self, resources, event):
         OfferHelper.execute_in_parallel_grouped_by_account(
@@ -380,15 +440,25 @@ class CosmosDBStoreStateAction(AzureBaseAction):
             self.log
         )
 
-    def _process_account_set(self, resources, data_client):
+    def _process_account_set(self, resources, account_client):
         account_tag_values = []
+        tag_name = self.data.get('state-tag')
+        cosmos_account = resources[0]['c7n:parent']
 
         for resource in resources:
-            account_tag_values.append('{}:{}'.format(resource['_rid'], resource['c7n:offer']['content']['offerThroughput']))
+            account_tag_values.append('{}:{}'.format(
+                resource['_rid'], resource['c7n:offer']['content']['offerThroughput']))
 
         tag_value = ';'.join(account_tag_values)
-        tag = {self.data.get('state-tag'): tag_value}
-        TagHelper.add_tags(self, resources[0]['c7n:parent'], tag)
+
+        if len(tag_value) > self.TAG_VALUE_CHAR_LIMIT:
+            raise('Can not add tag, {}, on parent resource, {}, '
+                  'because tag value exceeds allowed length.'
+                  'Add filters to reduce number of containers.'
+                  .format(tag_name, cosmos_account['name']))
+
+        TagHelper.add_tags(self, cosmos_account, {tag_name: tag_value})
+        return resources
 
     def _process_resource(self, resource):
         pass
@@ -440,14 +510,14 @@ class OfferHelper(object):
         # Process cosmos db account groups in parallel
         with executor_factory(max_workers=3) as w:
             for resource_set in account_grouped:
-                account_id = resource_set[0]['c7n:parent-id']
-                account_endpoint = resource_set[0]['c7n:document-endpoint']
 
-                data_client = OfferHelper.get_cosmos_data_client_for_account(
-                    account_id, account_endpoint, account_manager, readonly)
+                account_client = OfferHelper.get_cosmos_data_client_for_account(
+                    resource_set[0]['c7n:parent-id'],
+                    resource_set[0]['c7n:document-endpoint'],
+                    account_manager, readonly)
 
-                OfferHelper.populate_offer_data_for_account(resource_set, data_client)
-                futures.append(w.submit(process_resource_set, resource_set, data_client))
+                OfferHelper.populate_offer_data_for_account(resource_set, account_client)
+                futures.append(w.submit(process_resource_set, resource_set, account_client))
 
             for f in as_completed(futures):
                 if f.exception():
