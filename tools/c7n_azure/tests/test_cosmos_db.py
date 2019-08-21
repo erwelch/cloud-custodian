@@ -15,11 +15,12 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 from azure.cosmos.cosmos_client import CosmosClient
-
 from azure_common import BaseTest, arm_template, cassette_name
-from c7n.utils import local_session
 from c7n_azure.resources.cosmos_db import CosmosDBChildResource
 from c7n_azure.session import Session
+from mock import patch
+
+from c7n.utils import local_session
 
 
 class CosmosDBTest(BaseTest):
@@ -44,6 +45,24 @@ class CosmosDBTest(BaseTest):
             p = self.load_policy({
                 'name': 'test-azure-cosmos-db',
                 'resource': 'azure.cosmosdb-collection'
+            }, validate=True)
+            self.assertTrue(p)
+
+            p = self.load_policy({
+                'name': 'test-azure-cosmosdb',
+                'resource': 'azure.cosmosdb',
+                'filters': [
+                    {'type': 'value',
+                     'key': 'name',
+                     'op': 'eq',
+                     'value_type': 'normalize',
+                     'value': 'cctestcosmosdb'}],
+                'actions': [
+                    {'type': 'set-firewall-rules',
+                     'bypass-rules': ['Portal'],
+                     'ip-rules': ['0.0.0.0/1', '11.12.13.14', '21.22.23.24']
+                     }
+                ]
             }, validate=True)
             self.assertTrue(p)
 
@@ -182,8 +201,192 @@ class CosmosDBTest(BaseTest):
         self.assertEqual(expected_tag_value, tag_value)
 
 
-class CosmosDBThroughputActionsTest(BaseTest):
+class CosmosDBFirewallActionTest(BaseTest):
 
+    @patch('azure.mgmt.cosmosdb.operations.database_accounts_operations.'
+           'DatabaseAccountsOperations.create_or_update')
+    @cassette_name('firewall_action')
+    @arm_template('cosmosdb.json')
+    def test_set_ip_range_filter_append(self, update_mock):
+        p = self.load_policy({
+            'name': 'test-azure-cosmosdb',
+            'resource': 'azure.cosmosdb',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctestcosmosdb'}],
+            'actions': [
+                {'type': 'set-firewall-rules',
+                 'ip-rules': ['0.0.0.0/1', '11.12.13.14', '21.22.23.24']
+                 }
+            ]
+        })
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        self.assertEqual(1, len(update_mock.mock_calls))
+        name, args, kwargs = update_mock.mock_calls[0]
+
+        self.assertEqual(resources[0]['resourceGroup'], args[0])
+        self.assertEqual(resources[0]['name'], args[1])
+        self.assertEqual(
+            set('0.0.0.0/1,128.0.0.0/1,11.12.13.14,21.22.23.24,'
+                '104.42.195.92,40.76.54.131,52.176.6.30,52.169.50.45,52.187.184.26'.split(',')),
+            set(kwargs['create_update_parameters']['properties']['ipRangeFilter'].split(',')))
+
+    @patch('azure.mgmt.cosmosdb.operations.database_accounts_operations.'
+           'DatabaseAccountsOperations.create_or_update')
+    @cassette_name('firewall_action')
+    @arm_template('cosmosdb.json')
+    def test_set_ip_range_filter_replace(self, update_mock):
+        p = self.load_policy({
+            'name': 'test-azure-cosmosdb',
+            'resource': 'azure.cosmosdb',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctestcosmosdb'}],
+            'actions': [
+                {'type': 'set-firewall-rules',
+                 'append': False,
+                 'ip-rules': ['0.0.0.0/1', '11.12.13.14', '21.22.23.24']
+                 }
+            ]
+        })
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        self.assertEqual(1, len(update_mock.mock_calls))
+        name, args, kwargs = update_mock.mock_calls[0]
+
+        self.assertEqual(resources[0]['resourceGroup'], args[0])
+        self.assertEqual(resources[0]['name'], args[1])
+        self.assertEqual(
+            set('0.0.0.0/1,11.12.13.14,21.22.23.24,104.42.195.92,40.76.54.131,'
+                '52.176.6.30,52.169.50.45,52.187.184.26'.split(',')),
+            set(kwargs['create_update_parameters']['properties']['ipRangeFilter'].split(',')))
+
+    @patch('azure.mgmt.cosmosdb.operations.database_accounts_operations.'
+           'DatabaseAccountsOperations.create_or_update')
+    @cassette_name('firewall_action')
+    @arm_template('cosmosdb.json')
+    def test_set_ip_range_filter_replace_bypass(self, update_mock):
+        p = self.load_policy({
+            'name': 'test-azure-cosmosdb',
+            'resource': 'azure.cosmosdb',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctestcosmosdb'}],
+            'actions': [
+                {'type': 'set-firewall-rules',
+                 'append': False,
+                 'bypass-rules': ['Portal', 'AzureCloud'],
+                 'ip-rules': ['0.0.0.0/1', '11.12.13.14', '21.22.23.24']
+                 }
+            ]
+        })
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        self.assertEqual(1, len(update_mock.mock_calls))
+        name, args, kwargs = update_mock.mock_calls[0]
+
+        self.assertEqual(resources[0]['resourceGroup'], args[0])
+        self.assertEqual(resources[0]['name'], args[1])
+        self.assertEqual(
+            {'0.0.0.0/1',
+             '104.42.195.92',
+             '11.12.13.14',
+             '21.22.23.24',
+             '40.76.54.131',
+             '52.169.50.45',
+             '52.176.6.30',
+             '52.187.184.26',
+             '0.0.0.0'
+             },
+            set(kwargs['create_update_parameters']['properties']['ipRangeFilter'].split(',')))
+
+    @patch('azure.mgmt.cosmosdb.operations.database_accounts_operations.'
+           'DatabaseAccountsOperations.create_or_update')
+    @cassette_name('firewall_action')
+    @arm_template('cosmosdb.json')
+    def test_set_ip_range_filter_remove_bypass(self, update_mock):
+        p = self.load_policy({
+            'name': 'test-azure-cosmosdb',
+            'resource': 'azure.cosmosdb',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctestcosmosdb'}],
+            'actions': [
+                {'type': 'set-firewall-rules',
+                 'append': False,
+                 'bypass-rules': [],
+                 'ip-rules': ['21.22.23.24']
+                 }
+            ]
+        })
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        self.assertEqual(1, len(update_mock.mock_calls))
+        name, args, kwargs = update_mock.mock_calls[0]
+
+        self.assertEqual(resources[0]['resourceGroup'], args[0])
+        self.assertEqual(resources[0]['name'], args[1])
+        self.assertEqual(
+            {'21.22.23.24'},
+            set(kwargs['create_update_parameters']['properties']['ipRangeFilter'].split(',')))
+
+    @patch('azure.mgmt.cosmosdb.operations.database_accounts_operations.'
+           'DatabaseAccountsOperations.create_or_update')
+    @cassette_name('firewall_action')
+    @arm_template('cosmosdb.json')
+    def test_set_vnet_append(self, update_mock):
+        p = self.load_policy({
+            'name': 'test-azure-cosmosdb',
+            'resource': 'azure.cosmosdb',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctestcosmosdb'}],
+            'actions': [
+                {'type': 'set-firewall-rules',
+                 'append': True,
+                 'virtual-network-rules': ['id1', 'id2'],
+                 'ip-rules': ['0.0.0.0/1', '11.12.13.14', '21.22.23.24']
+                 }
+            ]
+        })
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        name, args, kwargs = update_mock.mock_calls[0]
+
+        self.assertEqual(resources[0]['resourceGroup'], args[0])
+        self.assertEqual(resources[0]['name'], args[1])
+        self.assertEqual(
+            set('0.0.0.0/1,128.0.0.0/1,11.12.13.14,21.22.23.24,'
+                '104.42.195.92,40.76.54.131,52.176.6.30,52.169.50.45,52.187.184.26'.split(',')),
+            set(kwargs['create_update_parameters']['properties']['ipRangeFilter'].split(',')))
+        self.assertEqual(
+            {'id1', 'id2'},
+            set([r.id for r in
+                 kwargs['create_update_parameters']['properties']['virtualNetworkRules']]))
+
+
+class CosmosDBThroughputActionsTest(BaseTest):
     def setUp(self, *args, **kwargs):
         super(CosmosDBThroughputActionsTest, self).setUp(*args, **kwargs)
         self.client = local_session(Session).client('azure.mgmt.cosmosdb.CosmosDB')
