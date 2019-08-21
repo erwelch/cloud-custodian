@@ -39,6 +39,7 @@ except ImportError:
 
 max_workers = constants.DEFAULT_MAX_THREAD_WORKERS
 log = logging.getLogger('azure.cosmosdb')
+THROUGHPUT_MULTIPLIER = 100
 
 
 @resources.register('cosmosdb')
@@ -373,7 +374,8 @@ class CosmosDBRestoreStateAction(CosmosDBReplaceOfferAction):
                 for state in container_states_tag_value.split(';'):
                     state_data = state.split(':')
                     container_rid = state_data[0]
-                    container_throughput = state_data[1]
+                    # restoring throughput size with multiplier since it was stored to save space
+                    container_throughput = int(state_data[1]) * THROUGHPUT_MULTIPLIER
 
                     container = next((c for c in resources if c['_rid'] == container_rid), None)
 
@@ -390,7 +392,7 @@ class CosmosDBRestoreStateAction(CosmosDBReplaceOfferAction):
 
 
 @CosmosDBCollection.action_registry.register('save-throughput-state')
-class CosmosDBStoreStateAction(AzureBaseAction):
+class CosmosDBSaveStateAction(AzureBaseAction):
     """CosmosDB Store State Action
 
     Stores the throughput of collections in a tag on the parent Cosmos DB account.
@@ -399,7 +401,7 @@ class CosmosDBStoreStateAction(AzureBaseAction):
 
     :example:
 
-    This policy stores the throughput of collections with throughput over 400 in
+    This policy saves the throughput of collections with throughput over 400 in
     a tag called 'on-hour-state' on the parent Cosmos DB account.
 
     .. code-block:: yaml
@@ -443,16 +445,20 @@ class CosmosDBStoreStateAction(AzureBaseAction):
         cosmos_account = resources[0]['c7n:parent']
 
         for resource in resources:
+            # dividing by multiplier to reduce string size (throughputs are multiples of 100)
+            throughput = int(
+                resource['c7n:offer']['content']['offerThroughput'] / THROUGHPUT_MULTIPLIER)
+
             account_tag_values.append('{}:{}'.format(
-                resource['_rid'], resource['c7n:offer']['content']['offerThroughput']))
+                resource['_rid'], throughput))
 
         tag_value = ';'.join(account_tag_values)
 
         if len(tag_value) > self.TAG_VALUE_CHAR_LIMIT:
-            raise('Can not add tag, {}, on parent resource, {}, '
-                  'because tag value exceeds allowed length.'
-                  'Add filters to reduce number of containers.'
-                  .format(tag_name, cosmos_account['name']))
+            raise ValueError('Can not add tag, {}, on parent resource, {}, '
+                             'because tag value exceeds allowed length.'
+                             'Add filters to reduce number of containers.'
+                             .format(tag_name, cosmos_account['name']))
 
         TagHelper.add_tags(self, cosmos_account, {tag_name: tag_value})
         return resources

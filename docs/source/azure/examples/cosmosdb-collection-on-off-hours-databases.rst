@@ -16,7 +16,7 @@ collections according to hours of the day:
 
     Actions:
 
-    * ``save-throughput-state``: stores the current state of the collections in a tag
+    * ``save-throughput-state``: saves the current state of the collections in a tag
     * ``replace-offer``: resizes collections during off hours (in this example, down to 400)
     * ``restore-throughput-state``: restores the throughput state of the collections from the tag provided in the ``store-throughput-state`` action
 
@@ -26,7 +26,7 @@ Note: The tag provided to ``save-throughput-state`` and ``restore-throughput-sta
 
     policies:
       - name: restore-collections-throughput-during-on-hours
-        resource: azure.cosmosdb-collections
+        resource: azure.cosmosdb-collection
         filters:
           - type: parent
             filter:
@@ -36,8 +36,8 @@ Note: The tag provided to ``save-throughput-state`` and ``restore-throughput-sta
           - type: restore-throughput-state
             state-tag: on-hours-throughput
 
-      - name: store-collections-throughput-and-resize-during-off-hours
-        resource: azure.cosmosdb-collections
+      - name: save-collections-throughput-and-resize-during-off-hours
+        resource: azure.cosmosdb-collection
         filters:
           - type: parent
             filter:
