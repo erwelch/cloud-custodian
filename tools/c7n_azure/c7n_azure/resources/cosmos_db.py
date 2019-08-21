@@ -346,13 +346,8 @@ class CosmosDBRestoreStateAction(CosmosDBReplaceOfferAction):
     .. code-block:: yaml
 
         policies:
-          - name: restore-on-hours-throughput-state
+          - name: restore-throughput-state
             resource: azure.cosmosdb-collection
-            filters:
-              - type: onhour
-                default_tz: pt
-                onhour: 8
-                tag: onoffhour_schedule
             actions:
               - type: restore-throughput-state
                 state-tag: on-hour-state
@@ -399,6 +394,8 @@ class CosmosDBStoreStateAction(AzureBaseAction):
     """CosmosDB Store State Action
 
     Stores the throughput of collections in a tag on the parent Cosmos DB account.
+    With accounts that have many collections, it's important to filter down which
+    collections to store since there is a tag length limit (approx 16 collections).
 
     :example:
 
@@ -416,7 +413,7 @@ class CosmosDBStoreStateAction(AzureBaseAction):
                 op: gt
                 value: 400
             actions:
-              - type: restore-throughput-state
+              - type: store-throughput-state
                 state-tag: on-hour-state
 
     """
