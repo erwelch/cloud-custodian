@@ -17,7 +17,7 @@ from azure_common import BaseTest
 from c7n_azure.lookup import Lookup
 
 
-class TagsTest(BaseTest):
+class LookupTest(BaseTest):
 
     def test_lookup_type(self):
         number_schema = {'type': 'number'}
