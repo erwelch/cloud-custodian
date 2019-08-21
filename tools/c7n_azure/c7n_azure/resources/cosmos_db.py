@@ -389,7 +389,7 @@ class CosmosDBRestoreStateAction(CosmosDBReplaceOfferAction):
         return resources
 
 
-@CosmosDBCollection.action_registry.register('store-throughput-state')
+@CosmosDBCollection.action_registry.register('save-throughput-state')
 class CosmosDBStoreStateAction(AzureBaseAction):
     """CosmosDB Store State Action
 
