@@ -128,7 +128,7 @@ class AppServicePlanTest(BaseTest):
             'actions': [
                 {'type': 'resize-plan',
                  'size': {
-                     'source': 'resource',
+                     'type': 'resource',
                      'key': 'tags.sku'
                  }}],
         })
