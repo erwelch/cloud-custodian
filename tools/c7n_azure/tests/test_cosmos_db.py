@@ -163,7 +163,7 @@ class CosmosDBTest(BaseTest):
             ],
             'actions': [
                 {
-                    'type': 'store-throughput-state',
+                    'type': 'save-throughput-state',
                     'state-tag': 'test-store-throughput'
                 }
             ]
@@ -232,10 +232,10 @@ class CosmosDBThroughputActionsTest(BaseTest):
             ]
         })
         collections = p.run()
-        self.assertEqual(len(collections), 1)
-
-        self._assert_offer_throughput_equals(500, collections[0]['_self'])
         self.offer = collections[0]['c7n:offer']
+
+        self.assertEqual(len(collections), 1)
+        self._assert_offer_throughput_equals(500, collections[0]['_self'])
 
     def test_restore_throughput_state_updates_throughput_from_tag(self):
 
@@ -252,7 +252,7 @@ class CosmosDBThroughputActionsTest(BaseTest):
             ],
             'actions': [
                 {
-                    'type': 'store-throughput-state',
+                    'type': 'save-throughput-state',
                     'state-tag': 'test-restore-throughput'
                 }
             ]
@@ -262,6 +262,8 @@ class CosmosDBThroughputActionsTest(BaseTest):
         self.assertEqual(len(collections), 1)
 
         collection_offer = collections[0]['c7n:offer']
+        self.offer = collection_offer
+
         throughput_to_restore = collection_offer['content']['offerThroughput']
 
         collection_offer['content']['offerThroughput'] = throughput_to_restore + 100
@@ -293,9 +295,9 @@ class CosmosDBThroughputActionsTest(BaseTest):
         })
 
         collections = p2.run()
+
         self.assertEqual(len(collections), 1)
         self._assert_offer_throughput_equals(throughput_to_restore, collections[0]['_self'])
-        self.offer = collections[0]['c7n:offer']
 
     def _assert_offer_throughput_equals(self, throughput, resource_self):
         offers = self.data_client.ReadOffers()

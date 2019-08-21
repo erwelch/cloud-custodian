@@ -413,13 +413,13 @@ class CosmosDBStoreStateAction(AzureBaseAction):
                 op: gt
                 value: 400
             actions:
-              - type: store-throughput-state
+              - type: save-throughput-state
                 state-tag: on-hour-state
 
     """
 
     schema = type_schema(
-        'store-throughput-state',
+        'save-throughput-state',
         required=['state-tag'],
         **{
             'state-tag': {'type': 'string'}
