@@ -20,6 +20,15 @@ except ImportError:
     certifi = None
 
 import jmespath
+
+try:
+    # python 3
+    from urllib.request import getproxies
+except ImportError:
+    # python 2
+    from urllib import getproxies
+
+from six.moves.urllib import parse as urlparse
 import urllib3
 from six.moves.urllib import parse
 
@@ -94,9 +103,7 @@ class Webhook(EventAction):
             'policy': self.manager.data
         }
 
-        self.http = urllib3.PoolManager(
-            cert_reqs='CERT_REQUIRED',
-            ca_certs=certifi and certifi.where() or None)
+        self.http = self._build_http_manager()
 
         if self.batch:
             for chunk in utils.chunks(resources, self.batch_size):
@@ -128,6 +135,37 @@ class Webhook(EventAction):
                           (self.method, res.status, prepared_url))
         except urllib3.exceptions.HTTPError as e:
             self.log.error("Error calling %s. Code: %s" % (prepared_url, e.reason))
+
+    def _build_http_manager(self):
+        pool_kwargs = {
+            'cert_reqs': 'CERT_REQUIRED',
+            'ca_certs': certifi and certifi.where() or None
+        }
+
+        proxy_url = self._get_proxy_url()
+        if proxy_url:
+            return urllib3.ProxyManager(proxy_url, **pool_kwargs)
+        else:
+            return urllib3.PoolManager(**pool_kwargs)
+
+    def _get_proxy_url(self):
+        proxies = getproxies()
+        url_parts = urlparse.urlparse(self.url)
+        if url_parts.hostname is None:
+            return proxies.get(url_parts.scheme, proxies.get('all'))
+
+        proxy_keys = [
+            url_parts.scheme + '://' + url_parts.hostname,
+            url_parts.scheme,
+            'all://' + url_parts.hostname,
+            'all'
+        ]
+
+        for proxy_key in proxy_keys:
+            if proxy_key in proxies:
+                return proxies[proxy_key]
+
+        return None
 
     def _build_headers(self, resource):
         return {k: jmespath.search(v, resource) for k, v in self.headers.items()}
