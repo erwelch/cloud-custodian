@@ -400,7 +400,7 @@ class DiagnosticSettingsFilter(ValueFilter):
 
     schema = type_schema('diagnostic-settings', rinherit=ValueFilter.schema)
     schema_alias = True
-    log = logging.gettingLogger('custodian.azure.filters.DiagnosticSettingsFilter')
+    log = logging.getLogger('custodian.azure.filters.DiagnosticSettingsFilter')
 
     def process(self, resources, event=None):
         futures = []
