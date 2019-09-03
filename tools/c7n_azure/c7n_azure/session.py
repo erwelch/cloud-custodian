@@ -36,6 +36,7 @@ except Exception:
 
 
 class Session(object):
+    log = logging.getLogger('custodian.azure.session')
 
     def __init__(self, subscription_id=None, authorization_file=None,
                  resource=constants.RESOURCE_ACTIVE_DIRECTORY):
@@ -45,7 +46,6 @@ class Session(object):
         :param resource: Resource endpoint for OAuth token.
         """
 
-        self.log = logging.getLogger('custodian.azure.session')
         self._provider_cache = {}
         self.subscription_id_override = subscription_id
         self.credentials = None

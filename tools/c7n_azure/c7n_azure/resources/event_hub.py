@@ -58,15 +58,11 @@ class EventHub(ArmResourceManager):
 
 @EventHub.filter_registry.register('firewall-rules')
 class EventHubFirewallRulesFilter(FirewallRulesFilter):
+    log = logging.getLogger('custodian.azure.eventhub')
 
     def __init__(self, data, manager=None):
         super(EventHubFirewallRulesFilter, self).__init__(data, manager)
-        self._log = logging.getLogger('custodian.azure.eventhub')
         self.client = None
-
-    @property
-    def log(self):
-        return self._log
 
     def process(self, resources, event=None):
         self.client = self.manager.get_client()

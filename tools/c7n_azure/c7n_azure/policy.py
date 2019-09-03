@@ -99,10 +99,10 @@ class AzureFunctionMode(ServerlessExecutionMode):
 
     default_storage_name = "custodian"
 
-    def __init__(self, policy):
+    log = logging.getLogger('custodian.azure.policy.AzureFunctionMode')
 
+    def __init__(self, policy):
         self.policy = policy
-        self.log = logging.getLogger('custodian.azure.AzureFunctionMode')
         self.policy_name = self.policy.data['name'].replace(' ', '-').lower()
         self.function_params = None
         self.function_app = None
