@@ -29,6 +29,7 @@ from datetime import datetime, timedelta
 
 import six
 from six.moves.urllib import parse as urlparse
+from six.moves.urllib.request import getproxies
 
 from c7n import ipaddress, config
 from c7n.exceptions import ClientError, PolicyValidationError
@@ -44,13 +45,6 @@ else:
         from yaml import CSafeLoader as SafeLoader, CSafeDumper as BaseSafeDumper
     except ImportError:  # pragma: no cover
         from yaml import SafeLoader, SafeDumper as BaseSafeDumper
-
-try:
-    # python 3
-    from urllib.request import getproxies
-except ImportError:
-    # python 2
-    from urllib import getproxies
 
 
 class SafeDumper(BaseSafeDumper or object):
