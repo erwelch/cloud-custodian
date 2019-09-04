@@ -29,6 +29,7 @@ import c7n_azure.resources.key_vault
 import c7n_azure.resources.key_vault_certificate
 import c7n_azure.resources.key_vault_keys
 import c7n_azure.resources.key_vault_storage
+import c7n_azure.resources.cost_management_export
 import c7n_azure.resources.load_balancer
 import c7n_azure.resources.resourcegroup
 import c7n_azure.resources.public_ip
