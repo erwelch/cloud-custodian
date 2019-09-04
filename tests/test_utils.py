@@ -19,13 +19,13 @@ import sys
 import tempfile
 import time
 
+import six
 from botocore.exceptions import ClientError
 from dateutil.parser import parse as parse_date
-import six
+from mock import patch
 
 from c7n import ipaddress, utils
 from c7n.config import Config
-
 from .common import BaseTest
 
 
@@ -137,6 +137,26 @@ class UrlConfTest(BaseTest):
         self.assertEqual(
             dict(utils.parse_url_config('aws://')),
             {'path': '', 'scheme': 'aws', 'netloc': '', 'url': 'aws://'})
+
+
+class ProxyUrlTest(BaseTest):
+
+    def test_no_proxy(self):
+        self.assertEqual(None, utils.get_proxy_url('http://web.site'))
+
+    def test_http_proxy_with_full_url(self):
+        with patch.dict(os.environ,
+                        {'HTTP_PROXY': 'http://mock.http.proxy.server:8000'},
+                        clear=True):
+            proxy_url = utils.get_proxy_url('http://web.site')
+            self.assertEqual(proxy_url, 'http://mock.http.proxy.server:8000')
+
+    def test_http_proxy_with_relative_url(self):
+        with patch.dict(os.environ,
+                        {'HTTP_PROXY': 'http://mock.http.proxy.server:8000'},
+                        clear=True):
+            proxy_url = utils.get_proxy_url('/relative/url')
+            self.assertEqual(proxy_url, None)
 
 
 class UtilTest(BaseTest):

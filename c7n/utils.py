@@ -15,23 +15,23 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 import csv
-from datetime import datetime, timedelta
 import functools
-import json
 import itertools
+import json
 import logging
 import os
 import random
 import re
+import sys
 import threading
 import time
-import six
-import sys
+from datetime import datetime, timedelta
 
+import six
 from six.moves.urllib import parse as urlparse
 
-from c7n.exceptions import ClientError, PolicyValidationError
 from c7n import ipaddress, config
+from c7n.exceptions import ClientError, PolicyValidationError
 
 # Try to play nice in a serverless environment, where we don't require yaml
 
@@ -44,6 +44,13 @@ else:
         from yaml import CSafeLoader as SafeLoader, CSafeDumper as BaseSafeDumper
     except ImportError:  # pragma: no cover
         from yaml import SafeLoader, SafeDumper as BaseSafeDumper
+
+try:
+    # python 3
+    from urllib.request import getproxies
+except ImportError:
+    # python 2
+    from urllib import getproxies
 
 
 class SafeDumper(BaseSafeDumper or object):
@@ -545,6 +552,24 @@ def parse_url_config(url):
         conf[k] = v[0]
     conf['url'] = url
     return conf
+
+
+def get_proxy_url(url):
+    proxies = getproxies()
+    url_parts = parse_url_config(url)
+
+    proxy_keys = [
+        url_parts['scheme'] + '://' + url_parts['netloc'],
+        url_parts['scheme'],
+        'all://' + url_parts['netloc'],
+        'all'
+    ]
+
+    for key in proxy_keys:
+        if key in proxies:
+            return proxies[key]
+
+    return None
 
 
 class FormatDate(object):
