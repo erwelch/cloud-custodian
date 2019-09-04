@@ -52,7 +52,7 @@ class AzureStorageOutput(DirectoryOutput):
 
     DEFAULT_BLOB_FOLDER_PREFIX = '{policy_name}/{now:%Y/%m/%d/%H/}'
 
-    log = logging.getLogger('custodian.azure.output')
+    log = logging.getLogger('custodian.azure.output.AzureStorageOutput')
 
     def __init__(self, ctx, config=None):
         self.ctx = ctx

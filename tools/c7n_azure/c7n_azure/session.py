@@ -41,7 +41,6 @@ log = logging.getLogger('custodian.azure.session')
 
 
 class Session(object):
-    log = logging.getLogger('custodian.azure.session')
 
     def __init__(self, subscription_id=None, authorization_file=None,
                  resource=constants.RESOURCE_ACTIVE_DIRECTORY):

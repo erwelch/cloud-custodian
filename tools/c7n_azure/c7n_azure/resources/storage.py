@@ -140,7 +140,7 @@ class StorageSetFirewallAction(SetFirewallAction):
         }
     )
 
-    log = logging.getLogger('custodian.azure..StorageSetFirewallAction')
+    log = logging.getLogger('custodian.azure.storage.StorageSetFirewallAction')
 
     def __init__(self, data, manager=None):
         super(StorageSetFirewallAction, self).__init__(data, manager)

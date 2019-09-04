@@ -82,7 +82,6 @@ class SqlServer(ArmResourceManager):
 
 @SqlServer.filter_registry.register('firewall-rules')
 class SqlServerFirewallRulesFilter(FirewallRulesFilter):
-    log = logging.getLogger('custodian.azure.sqlserver')
 
     def __init__(self, data, manager=None):
         super(SqlServerFirewallRulesFilter, self).__init__(data, manager)

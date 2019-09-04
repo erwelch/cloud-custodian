@@ -9,7 +9,7 @@ from c7n_azure.session import Session
 
 @six.add_metaclass(ABCMeta)
 class DeploymentUnit:
-    log = logging.getLogger('custodian.azure.deployment_unit')
+    log = logging.getLogger('custodian.azure.deployment_unit.DeploymentUnit')
 
     def __init__(self, client):
         self.type = ""
