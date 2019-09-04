@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import logging
 import operator
 from abc import ABCMeta, abstractmethod
-from concurrent.futures import as_completed
 from datetime import timedelta
 
 import six
@@ -23,16 +23,18 @@ from azure.mgmt.costmanagement.models import (QueryAggregation,
                                               QueryFilter, QueryGrouping,
                                               QueryTimePeriod, TimeframeType)
 from azure.mgmt.policyinsights import PolicyInsightsClient
+from c7n_azure.tags import TagHelper
+from c7n_azure.utils import (IpRangeHelper, Math, ResourceIdParser,
+                             StringUtils, ThreadHelper, now, utcnow)
+from concurrent.futures import as_completed
 from dateutil import tz as tzutils
 from dateutil.parser import parse
+from msrest.exceptions import HttpOperationError
 
 from c7n.filters import Filter, FilterValidationError, ValueFilter
 from c7n.filters.core import PolicyValidationError
 from c7n.filters.offhours import OffHour, OnHour, Time
 from c7n.utils import chunks, get_annotation_prefix, type_schema
-from c7n_azure.tags import TagHelper
-from c7n_azure.utils import (IpRangeHelper, Math, ResourceIdParser,
-                             StringUtils, ThreadHelper, now, utcnow)
 
 scalar_ops = {
     'eq': operator.eq,
@@ -120,7 +122,10 @@ class MetricFilter(Filter):
 
     aggregation_funcs = {
         'average': Math.mean,
-        'total': Math.sum
+        'total': Math.sum,
+        'count': Math.sum,
+        'minimum': Math.max,
+        'maximum': Math.min
     }
 
     schema = {
@@ -135,7 +140,7 @@ class MetricFilter(Filter):
             'timeframe': {'type': 'number'},
             'interval': {'enum': [
                 'PT1M', 'PT5M', 'PT15M', 'PT30M', 'PT1H', 'PT6H', 'PT12H', 'P1D']},
-            'aggregation': {'enum': ['total', 'average']},
+            'aggregation': {'enum': ['total', 'average', 'count', 'minimum', 'maximum']},
             'no_data_action': {'enum': ['include', 'exclude']},
             'filter': {'type': 'string'}
         }
@@ -184,15 +189,19 @@ class MetricFilter(Filter):
         cached_metric_data = self._get_cached_metric_data(resource)
         if cached_metric_data:
             return cached_metric_data['measurement']
-
-        metrics_data = self.client.metrics.list(
-            resource['id'],
-            timespan=self.timespan,
-            interval=self.interval,
-            metricnames=self.metric,
-            aggregation=self.aggregation,
-            filter=self.filter
-        )
+        try:
+            metrics_data = self.client.metrics.list(
+                resource['id'],
+                timespan=self.timespan,
+                interval=self.interval,
+                metricnames=self.metric,
+                aggregation=self.aggregation,
+                filter=self.filter
+            )
+        except HttpOperationError as e:
+            self.log.error("could not get metric:%s on %s. Full error: %s" % (
+                self.metric, resource['id'], str(e)))
+            return None
 
         if len(metrics_data.value) > 0 and len(metrics_data.value[0].timeseries) > 0:
             m = [getattr(item, self.aggregation)
@@ -288,6 +297,7 @@ class TagActionFilter(Filter):
         op={'type': 'string'})
     schema_alias = True
     current_date = None
+    log = logging.getLogger('custodian.azure.filters.TagActionFilter')
 
     def validate(self):
         op = self.data.get('op')
@@ -390,6 +400,7 @@ class DiagnosticSettingsFilter(ValueFilter):
 
     schema = type_schema('diagnostic-settings', rinherit=ValueFilter.schema)
     schema_alias = True
+    log = logging.getLogger('custodian.azure.filters.DiagnosticSettingsFilter')
 
     def process(self, resources, event=None):
         futures = []
@@ -558,6 +569,7 @@ class FirewallRulesFilter(Filter):
     }
 
     schema_alias = True
+    log = logging.getLogger('custodian.azure.filters.FirewallRulesFilter')
 
     def __init__(self, data, manager=None):
         super(FirewallRulesFilter, self).__init__(data, manager)
@@ -565,11 +577,6 @@ class FirewallRulesFilter(Filter):
         self.policy_equal = None
         self.policy_any = None
         self.policy_only = None
-
-    @property
-    @abstractmethod
-    def log(self):
-        raise NotImplementedError()
 
     def process(self, resources, event=None):
         self.policy_include = IpRangeHelper.parse_ip_ranges(self.data, 'include')
@@ -674,6 +681,7 @@ class ResourceLockFilter(Filter):
         })
 
     schema_alias = True
+    log = logging.getLogger('custodian.azure.filters.ResourceLockFilter')
 
     def __init__(self, data, manager=None):
         super(ResourceLockFilter, self).__init__(data, manager)
@@ -727,15 +735,21 @@ class CostFilter(ValueFilter):
     separately (e.g. SQL Server and SQL Server Databases). Warning message is logged if we detect
     different currencies.
 
-    Timeframe can be either number of days before today or one of:
+    Timeframe options:
 
-    WeekToDate,
-    MonthToDate,
-    YearToDate,
-    TheLastWeek,
-    TheLastMonth,
-    TheLastYear
+      - Number of days before today
 
+      - All days in current calendar period until today:
+
+        - ``WeekToDate``
+        - ``MonthToDate``
+        - ``YearToDate``
+
+      - All days in the previous calendar period:
+
+        - ``TheLastWeek``
+        - ``TheLastMonth``
+        - ``TheLastYear``
 
     :examples:
 
@@ -782,6 +796,7 @@ class CostFilter(ValueFilter):
         })
 
     schema_alias = True
+    log = logging.getLogger('custodian.azure.filters.CostFilter')
 
     def __init__(self, data, manager=None):
         data['key'] = 'PreTaxCost'  # can also be Currency, but now only PreTaxCost is supported
