@@ -14,8 +14,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from azure.mgmt.web import WebSiteManagementClient
-from azure_common import BaseTest, arm_template
+from azure_common import BaseTest, arm_template, cassette_name
 from c7n_azure.session import Session
+from jsonschema import ValidationError
 from mock import patch
 
 from c7n.utils import local_session
@@ -48,9 +49,20 @@ class AppServicePlanTest(BaseTest):
             }, validate=True)
             self.assertTrue(p)
 
+        # size and count are missing
+        with self.assertRaises(ValidationError):
+            self.load_policy({
+                'name': 'test-azure-appserviceplan',
+                'resource': 'azure.appserviceplan',
+                'actions': [
+                    {'type': 'resize-plan'}
+                ]
+            }, validate=True)
+
     @patch('azure.mgmt.web.operations.app_service_plans_operations.'
            'AppServicePlansOperations.update')
     @arm_template('appserviceplan.json')
+    @cassette_name('window_plans')
     def test_resize_plan_win(self, update_mock):
         p = self.load_policy({
             'name': 'test-azure-appserviceplan-win',
@@ -68,19 +80,22 @@ class AppServicePlanTest(BaseTest):
             ],
             'actions': [
                 {'type': 'resize-plan',
-                 'size': 'F1'}]
-        })
+                 'size': 'B1',
+                 'count': 2}]
+        }, validate=True)
         resources = p.run()
         self.assertEqual(1, len(resources))
 
         name, args, kwargs = update_mock.mock_calls[0]
         self.assertEqual('cctest-appserviceplan-win', args[1])
-        self.assertEqual('F1', args[2].sku.name)
-        self.assertEqual('FREE', args[2].sku.tier)
+        self.assertEqual('B1', args[2].sku.name)
+        self.assertEqual('BASIC', args[2].sku.tier)
+        self.assertEqual(2, args[2].sku.capacity)
 
     @patch('azure.mgmt.web.operations.app_service_plans_operations.'
            'AppServicePlansOperations.update')
     @arm_template('appserviceplan-linux.json')
+    @cassette_name('linux_plans')
     def test_resize_plan_linux(self, update_mock):
         p = self.load_policy({
             'name': 'test-azure-appserviceplan-linux',
@@ -98,19 +113,22 @@ class AppServicePlanTest(BaseTest):
             ],
             'actions': [
                 {'type': 'resize-plan',
-                 'size': 'F1'}]
-        })
+                 'size': 'B1',
+                 'count': 3}]
+        }, validate=True)
         resources = p.run()
         self.assertEqual(1, len(resources))
 
         name, args, kwargs = update_mock.mock_calls[0]
         self.assertEqual('cctest-appserviceplan-linux', args[1])
-        self.assertEqual('F1', args[2].sku.name)
-        self.assertEqual('FREE', args[2].sku.tier)
+        self.assertEqual('B1', args[2].sku.name)
+        self.assertEqual('BASIC', args[2].sku.tier)
+        self.assertEqual(3, args[2].sku.capacity)
 
     @patch('azure.mgmt.web.operations.app_service_plans_operations.'
            'AppServicePlansOperations.update')
     @arm_template('appserviceplan.json')
+    @cassette_name('window_plans')
     def test_resize_plan_from_resource_tag(self, update_mock):
         p = self.load_policy({
             'name': 'test-azure-appserviceplan',
@@ -128,7 +146,6 @@ class AppServicePlanTest(BaseTest):
                      'key': 'tags.sku'
                  }}],
         })
-
         resources = p.run()
         self.assertEqual(1, len(resources))
 
@@ -139,6 +156,7 @@ class AppServicePlanTest(BaseTest):
 
     @arm_template('appserviceplan.json')
     @patch('c7n_azure.resources.appserviceplan.ResizePlan.log.info')
+    @cassette_name('window_plans')
     def test_resize_consumption_win(self, logger):
         p = self.load_policy({
             'name': 'test-azure-consumption-win',
@@ -153,7 +171,7 @@ class AppServicePlanTest(BaseTest):
             'actions': [
                 {'type': 'resize-plan',
                  'size': 'F1'}]
-        })
+        }, validate=True)
         p.run()
 
         logger.assert_called_once_with(
@@ -162,6 +180,7 @@ class AppServicePlanTest(BaseTest):
 
     @arm_template('appserviceplan-linux.json')
     @patch('c7n_azure.resources.appserviceplan.ResizePlan.log.info')
+    @cassette_name('linux_plans')
     def test_resize_consumption_linux(self, logger):
         p = self.load_policy({
             'name': 'test-azure-appserviceplan-linux',
@@ -176,9 +195,41 @@ class AppServicePlanTest(BaseTest):
             'actions': [
                 {'type': 'resize-plan',
                  'size': 'F1'}]
-        })
+        }, validate=True)
         p.run()
 
         logger.assert_called_once_with(
             'Skipping cctest-consumption-linux, '
             'because this App Service Plan is for Consumption Azure Functions.')
+
+    @patch('azure.mgmt.web.operations.app_service_plans_operations.'
+           'AppServicePlansOperations.update')
+    @arm_template('appserviceplan.json')
+    @cassette_name('window_plans')
+    def test_resize_plan_win_only_count(self, update_mock):
+        p = self.load_policy({
+            'name': 'test-azure-appserviceplan-win',
+            'resource': 'azure.appserviceplan',
+            'filters': [
+                {'type': 'value',
+                 'key': 'name',
+                 'op': 'eq',
+                 'value_type': 'normalize',
+                 'value': 'cctest-appserviceplan-win'},
+                {'type': 'value',
+                 'key': 'sku.name',
+                 'op': 'eq',
+                 'value': 'S1'}
+            ],
+            'actions': [
+                {'type': 'resize-plan',
+                 'count': 3}]
+        }, validate=True)
+        resources = p.run()
+        self.assertEqual(1, len(resources))
+
+        name, args, kwargs = update_mock.mock_calls[0]
+        self.assertEqual('cctest-appserviceplan-win', args[1])
+        self.assertEqual('S1', args[2].sku.name)
+        self.assertEqual('Standard', args[2].sku.tier)
+        self.assertEqual(3, args[2].sku.capacity)

@@ -27,15 +27,17 @@ from azure.keyvault import KeyVaultAuthentication, AccessToken
 from c7n_azure import constants
 from c7n_azure.utils import (ResourceIdParser, StringUtils, custodian_azure_send_override,
                              ManagedGroupHelper, get_keyvault_secret)
-from knack.util import CLIError
 from msrest.exceptions import AuthenticationError
 from msrestazure.azure_active_directory import MSIAuthentication
 from requests import HTTPError
 
 try:
     from azure.cli.core._profile import Profile
+    from knack.util import CLIError
 except Exception:
     Profile = None
+    CLIError = ImportError  # Assign an exception that never happens because of Auth problems
+
 
 log = logging.getLogger('custodian.azure.session')
 
@@ -178,17 +180,18 @@ class Session(object):
                 'access_token': os.environ.get(constants.ENV_ACCESS_TOKEN),
                 'tenant_id': os.environ.get(constants.ENV_TENANT_ID),
                 'use_msi': bool(os.environ.get(constants.ENV_USE_MSI)),
-                'subscription_id': os.environ.get(constants.ENV_SUB_ID),
+                'subscription_id':
+                    self.subscription_id_override or os.environ.get(constants.ENV_SUB_ID),
                 'keyvault_client_id': os.environ.get(constants.ENV_KEYVAULT_CLIENT_ID),
                 'keyvault_secret_id': os.environ.get(constants.ENV_KEYVAULT_SECRET_ID),
                 'enable_cli_auth': True
             }
 
+        self._authenticate()
+
         # Let provided id parameter override everything else
         if self.subscription_id_override is not None:
-            self._auth_params['subscription_id'] = self.subscription_id_override
-
-        self._authenticate()
+            self.subscription_id = self.subscription_id_override
 
         if self.credentials is None:
             log.error('Unable to authenticate with Azure.')

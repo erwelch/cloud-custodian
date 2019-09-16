@@ -16,8 +16,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import copy
 import csv
 import functools
-import itertools
+from datetime import datetime, timedelta
 import json
+import itertools
 import logging
 import os
 import random
@@ -25,7 +26,6 @@ import re
 import sys
 import threading
 import time
-from datetime import datetime, timedelta
 
 import six
 from six.moves.urllib import parse as urlparse
@@ -361,6 +361,9 @@ def snapshot_identifier(prefix, db_identifier):
     return '%s-%s-%s' % (prefix, db_identifier, now.strftime('%Y-%m-%d-%H-%M'))
 
 
+retry_log = logging.getLogger('c7n.retry')
+
+
 def get_retry(codes=(), max_attempts=8, min_delay=1, log_retries=False):
     """Decorator for retry boto3 api call on transient errors.
 
@@ -392,7 +395,7 @@ def get_retry(codes=(), max_attempts=8, min_delay=1, log_retries=False):
                 elif idx == max_attempts - 1:
                     raise
                 if log_retries:
-                    worker_log.log(
+                    retry_log.log(
                         log_retries,
                         "retrying %s on error:%s attempt:%d last delay:%0.2f",
                         func, e.response['Error']['Code'], idx, delay)
@@ -433,30 +436,6 @@ class IPv4Network(ipaddress.IPv4Network):
         if isinstance(other, ipaddress._BaseNetwork):
             return self.supernet_of(other)
         return super(IPv4Network, self).__contains__(other)
-
-
-worker_log = logging.getLogger('c7n.worker')
-
-
-def worker(f):
-    """Generic wrapper to log uncaught exceptions in a function.
-
-    When we cross concurrent.futures executor boundaries we lose our
-    traceback information, and when doing bulk operations we may tolerate
-    transient failures on a partial subset. However we still want to have
-    full accounting of the error in the logs, in a format that our error
-    collection (cwl subscription) can still pickup.
-    """
-    def _f(*args, **kw):
-        try:
-            return f(*args, **kw)
-        except Exception:
-            worker_log.exception(
-                'Error invoking %s',
-                "%s.%s" % (f.__module__, f.__name__))
-            raise
-    functools.update_wrapper(_f, f)
-    return _f
 
 
 def reformat_schema(model):
