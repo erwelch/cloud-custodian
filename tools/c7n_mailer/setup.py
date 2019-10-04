@@ -26,7 +26,7 @@ requires = [
     "python-dateutil>=2.8",
     "ruamel.yaml>=0.15.93",
     "datadog",
-    "sendgrid",
+    "sendgrid==6.0.5",
     "ldap3",
     "c7n",
     "redis"]
@@ -49,7 +49,7 @@ if path.exists(readme):
 
 setup(
     name="c7n_mailer",
-    version='0.5.4',
+    version='0.5.3',
     description="Cloud Custodian - Reference Mailer",
     long_description=long_description,
     long_description_content_type='text/markdown',
