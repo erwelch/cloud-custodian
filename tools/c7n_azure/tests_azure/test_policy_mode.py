@@ -101,8 +101,7 @@ class AzurePolicyModeTest(BaseTest):
 
     def test_azure_function_event_mode_child_event_type(self):
         with self.sign_out_patch():
-            with self.assertRaises(PolicyValidationError):
-                self.load_policy({
+            p = self.load_policy({
                     'name': 'test-azure-serverless-mode',
                     'resource': 'azure.networksecuritygroup',
                     'mode': {
@@ -116,6 +115,7 @@ class AzurePolicyModeTest(BaseTest):
                         ]
                     }
                 }, validate=True)
+            self.assertTrue(p)
 
     def test_azure_function_periodic_mode_schema_validation(self):
         with self.sign_out_patch():
