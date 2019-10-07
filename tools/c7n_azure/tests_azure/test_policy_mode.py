@@ -101,6 +101,24 @@ class AzurePolicyModeTest(BaseTest):
 
     def test_azure_function_event_mode_child_event_type(self):
         with self.sign_out_patch():
+            with self.assertRaises(PolicyValidationError):
+                self.load_policy({
+                    'name': 'test-azure-serverless-mode',
+                    'resource': 'azure.networksecuritygroup',
+                    'mode': {
+                        'type': FUNCTION_EVENT_TRIGGER_MODE,
+                        'events': [
+                            {
+                                'resourceProvider':
+                                    'Microsoft.Network/networkSecurityGroups/securityRules',
+                                'event': 'write'
+                            }
+                        ]
+                    }
+                }, validate=True)
+
+    def test_azure_function_event_mode_child_event_type(self):
+        with self.sign_out_patch():
             p = self.load_policy({
                 'name': 'test-azure-serverless-mode',
                 'resource': 'azure.networksecuritygroup',
