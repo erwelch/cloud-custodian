@@ -117,6 +117,20 @@ class AzurePolicyModeTest(BaseTest):
                     }
                 }, validate=True)
 
+    def test_azure_function_event_mode_unsupported_resource_type(self):
+        with self.sign_out_patch():
+            with self.assertRaises(PolicyValidationError):
+                self.load_policy({
+                    'name': 'test-azure-serverless-mode',
+                    'resource': 'azure.keyvault-key',
+                    'mode': {
+                        'type': FUNCTION_EVENT_TRIGGER_MODE,
+                        'events': [
+                            'KeyVaultWrite',
+                        ]
+                    }
+                }, validate=True)
+
     def test_azure_function_event_mode_child_event_type(self):
         with self.sign_out_patch():
             p = self.load_policy({
