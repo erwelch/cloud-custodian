@@ -359,12 +359,17 @@ class AzureEventGridMode(AzureFunctionMode):
 
     def validate(self):
         super(AzureEventGridMode, self).validate()
-        resource_type = self.policy.resource_manager.resource_type.resource_type
-        for event in self.subscribed_events:
-            if resource_type.lower() not in event.lower():
-                raise PolicyValidationError(
-                    'The policy resource, {}, can not be triggered by the event, {}.'.format(
-                        resource_type, event))
+        if hasattr(self.policy.resource_manager.resource_type, 'resource_type'):
+            resource_type = self.policy.resource_manager.resource_type.resource_type
+            for event in self.subscribed_events:
+                if resource_type.lower() not in event.lower():
+                    raise PolicyValidationError(
+                        'The policy resource, {}, can not be triggered by the event, {}.'.format(
+                            resource_type, event))
+        else:
+            raise PolicyValidationError(
+                'The policy resource, {}, is not supported in event grid mode.'.format(
+                    self.policy.data['resource']))
 
     def provision(self):
         super(AzureEventGridMode, self).provision()
